@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IV Medication Administration Steps</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b0e0e6 100%);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            color: #1a3c34;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            width: 100%;
+            max-width: 1100px;
+            text-align: center;
+            border: 4px solid #0288d1;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 26px;
+            color: #d32f2f;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .timer {
+            font-size: 18px;
+            color: #d32f2f;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .activity-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .options-column, .flowchart-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .options-column {
+            background: linear-gradient(45deg, #e1f5fe 0%, #b3e5fc 100%);
+            border: 3px solid #0288d1;
+        }
+
+        .flowchart-column {
+            background: linear-gradient(45deg, #e8f5e9 0%, #c8e6c9 100%);
+            border: 3px solid #388e3c;
+        }
+
+        .option-item, .flowchart-step {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .option-item {
+            background-color: #ffffff;
+            border: 2px solid #0288d1;
+            cursor: move;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            user-select: none;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-item:hover {
+            transform: scale(1.03);
+            background-color: #e1f5fe;
+        }
+
+        .option-item.dragging, .flowchart-step.dragging {
+            opacity: 0.6;
+            background-color: #b3e5fc;
+        }
+
+        .flowchart-step {
+            background-color: #ffffff;
+            border: 2px dashed #388e3c;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            min-height: 40px;
+            position: relative;
+        }
+
+        .flowchart-step.filled {
+            border-style: solid;
+            background-color: #f1f8e9;
+            cursor: move;
+        }
+
+        .flowchart-step.drag-over, .options-column.drag-over {
+            background-color: #c8e6c9;
+            border-color: #388e3c;
+        }
+
+        .options-column.drag-over {
+            background: linear-gradient(45deg, #b3e5fc 0%, #e1f5fe 100%);
+            border-color: #0288d1;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .feedback.correct {
+            color: #388e3c;
+            font-size: 36px;
+            animation: celebrate 2s ease-in-out infinite;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .feedback.incorrect {
+            color: #d32f2f;
+            font-size: 24px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2) rotate(5deg); }
+            75% { transform: scale(1.1) rotate(-5deg); }
+        }
+
+        .submit-btn, .retry-btn {
+            background: linear-gradient(45deg, #0288d1 0%, #d32f2f 100%);
+            color: #ffffff;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-btn:hover, .retry-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .retry-btn {
+            background: linear-gradient(45deg, #d32f2f 0%, #0288d1 100%);
+            display: none;
+        }
+
+        .footer {
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 14px;
+            color: #0277bd;
+            background-color: #ffffff;
+            border-top: 2px solid #0288d1;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+
+        @media (max-width: 800px) {
+            .activity-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .option-item, .flowchart-step {
+                font-size: 13px;
+                padding: 8px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .timer {
+                font-size: 16px;
+            }
+
+            .feedback.correct {
+                font-size: 30px;
+            }
+
+            .feedback.incorrect {
+                font-size: 20px;
+            }
+
+            .submit-btn, .retry-btn {
+                font-size: 14px;
+                padding: 10px 25px;
+            }
+
+            .footer {
+                font-size: 12px;
+                padding: 8px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>IV Medication Administration Steps</h1>
+        <div class="timer" id="timer">Time: 00:00</div>
+
+        <div class="activity-container">
+            <div class="options-column" id="options-list">
+                <!-- Unarranged steps will be dynamically generated -->
+            </div>
+            <div class="flowchart-column" id="flowchart-list">
+                <!-- Flowchart steps will be dynamically generated -->
+            </div>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <button class="submit-btn" id="submit-btn" onclick="submitSequence()">Submit Sequence</button>
+        <button class="retry-btn" id="retry-btn" onclick="retry()">Try Again</button>
+    </div>
+
+    <div class="footer">
+        Developed for Nursing Training | Fortis Hospital
+    </div>
+
+    <script>
+        // Define the 3 sets of IV Medication Administration steps
+        const questionSets = [
+            {
+                correctSequence: [
+                    "Verify physician’s order for IV medication",
+                    "Perform hand hygiene",
+                    "Check the 5 Rights: Right patient, drug, dose, route, time",
+                    "Gather necessary equipment (e.g., syringe, IV bag, tubing)",
+                    "Identify the patient using two identifiers (e.g., name, DOB)",
+                    "Explain the procedure to the patient",
+                    "Assess the IV site for patency and signs of infection",
+                    "Administer the IV medication at the correct rate",
+                    "Monitor the patient for adverse reactions",
+                    "Document the administration in the patient’s chart"
+                ]
+            },
+            {
+                correctSequence: [
+                    "Confirm the IV medication order with the physician’s chart",
+                    "Wash hands thoroughly with soap and water",
+                    "Ensure the 5 Rights are met: Patient, drug, dose, route, time",
+                    "Prepare equipment using aseptic technique",
+                    "Verify patient identity with two identifiers",
+                    "Discuss the procedure with the patient for consent",
+                    "Inspect the IV site for redness or swelling",
+                    "Deliver the IV medication at the prescribed rate",
+                    "Observe the patient for any side effects",
+                    "Record the procedure and patient response in the chart"
+                ]
+            },
+            {
+                correctSequence: [
+                    "Review the IV medication order in the patient’s chart",
+                    "Perform hand hygiene before starting",
+                    "Confirm the 5 Rights: Correct patient, drug, dose, route, time",
+                    "Collect all required supplies (e.g., IV tubing, syringe)",
+                    "Identify the patient using name and date of birth",
+                    "Inform the patient about the medication and its purpose",
+                    "Check the IV site for any complications",
+                    "Administer the medication through the IV line at the right rate",
+                    "Watch the patient for any allergic reactions",
+                    "Document the administration details in the patient’s record"
+                ]
+            }
+        ];
+
+        let currentSet = null;
+        let currentOptionsOrder = [];
+        let userSequence = [];
+        let timerInterval;
+        let secondsElapsed = 0;
+
+        const optionsList = document.getElementById("options-list");
+        const flowchartList = document.getElementById("flowchart-list");
+        const feedbackElement = document.getElementById("feedback");
+        const submitBtn = document.getElementById("submit-btn");
+        const retryBtn = document.getElementById("retry-btn");
+        const timerElement = document.getElementById("timer");
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            secondsElapsed = 0;
+            timerElement.textContent = "Time: 00:00";
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                const minutes = Math.floor(secondsElapsed / 60).toString().padStart(2, "0");
+                const seconds = (secondsElapsed % 60).toString().padStart(2, "0");
+                timerElement.textContent = `Time: ${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function initializeSet() {
+            // Randomly select a question set
+            const randomIndex = Math.floor(Math.random() * questionSets.length);
+            currentSet = questionSets[randomIndex];
+            userSequence = Array(currentSet.correctSequence.length).fill(null);
+
+            // Populate flowchart with empty slots
+            flowchartList.innerHTML = "";
+            for (let i = 1; i <= 10; i++) {
+                const stepDiv = document.createElement("div");
+                stepDiv.classList.add("flowchart-step");
+                stepDiv.setAttribute("data-step", i);
+                stepDiv.addEventListener("dragover", dragOver);
+                stepDiv.addEventListener("dragleave", dragLeave);
+                stepDiv.addEventListener("drop", drop);
+                flowchartList.appendChild(stepDiv);
+            }
+
+            // Shuffle options
+            currentOptionsOrder = [...currentSet.correctSequence].sort(() => Math.random() - 0.5);
+
+            // Populate options
+            optionsList.innerHTML = "";
+            currentOptionsOrder.forEach(opt => {
+                const div = document.createElement("div");
+                div.classList.add("option-item");
+                div.setAttribute("draggable", "true");
+                div.setAttribute("data-option", opt);
+                div.textContent = opt;
+                div.addEventListener("dragstart", dragStart);
+                div.addEventListener("dragend", dragEnd);
+                optionsList.appendChild(div);
+            });
+
+            // Add drop target to options column
+            optionsList.addEventListener("dragover", dragOverOptions);
+            optionsList.addEventListener("dragleave", dragLeaveOptions);
+            optionsList.addEventListener("drop", dropBackToOptions);
+
+            feedbackElement.style.display = "none";
+            submitBtn.disabled = false;
+            retryBtn.style.display = "none";
+
+            startTimer();
+        }
+
+        function dragStart(e) {
+            e.target.classList.add("dragging");
+            e.dataTransfer.setData("text/plain", e.target.getAttribute("data-option"));
+            e.dataTransfer.setData("source", e.target.classList.contains("option-item") ? "options" : "flowchart");
+        }
+
+        function dragEnd(e) {
+            e.target.classList.remove("dragging");
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+            e.target.classList.add("drag-over");
+        }
+
+        function dragLeave(e) {
+            e.target.classList.remove("drag-over");
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            e.target.classList.remove("drag-over");
+            const option = e.dataTransfer.getData("text/plain");
+            const source = e.dataTransfer.getData("source");
+            const stepIndex = parseInt(e.target.getAttribute("data-step")) - 1;
+
+            if (source === "options") {
+                // Dragging from options to flowchart
+                userSequence[stepIndex] = option;
+                e.target.textContent = option;
+                e.target.classList.add("filled");
+                e.target.setAttribute("draggable", "true");
+                e.target.setAttribute("data-option", option);
+                e.target.addEventListener("dragstart", dragStart);
+                e.target.addEventListener("dragend", dragEnd);
+
+                // Remove option from the list
+                const optionItem = optionsList.querySelector(`.option-item[data-option="${option}"]`);
+                if (optionItem) {
+                    optionItem.remove();
+                }
+            } else if (source === "flowchart") {
+                // Dragging from one flowchart slot to another
+                const oldStepIndex = Array.from(flowchartList.children).findIndex(step => step.textContent === option);
+                userSequence[oldStepIndex] = null;
+                userSequence[stepIndex] = option;
+                e.target.textContent = option;
+                e.target.classList.add("filled");
+                e.target.setAttribute("draggable", "true");
+                e.target.setAttribute("data-option", option);
+                e.target.addEventListener("dragstart", dragStart);
+                e.target.addEventListener("dragend", dragEnd);
+
+                const oldStep = flowchartList.children[oldStepIndex];
+                oldStep.textContent = "";
+                oldStep.classList.remove("filled");
+                oldStep.removeAttribute("draggable");
+                oldStep.removeEventListener("dragstart", dragStart);
+                oldStep.removeEventListener("dragend", dragEnd);
+            }
+        }
+
+        function dragOverOptions(e) {
+            e.preventDefault();
+            optionsList.classList.add("drag-over");
+        }
+
+        function dragLeaveOptions(e) {
+            optionsList.classList.remove("drag-over");
+        }
+
+        function dropBackToOptions(e) {
+            e.preventDefault();
+            optionsList.classList.remove("drag-over");
+            const option = e.dataTransfer.getData("text/plain");
+            const source = e.dataTransfer.getData("source");
+
+            if (source === "flowchart") {
+                // Dragging from flowchart back to options
+                const stepIndex = Array.from(flowchartList.children).findIndex(step => step.textContent === option);
+                userSequence[stepIndex] = null;
+
+                const step = flowchartList.children[stepIndex];
+                step.textContent = "";
+                step.classList.remove("filled");
+                step.removeAttribute("draggable");
+                step.removeEventListener("dragstart", dragStart);
+                step.removeEventListener("dragend", dragEnd);
+
+                // Add option back to the options list
+                const div = document.createElement("div");
+                div.classList.add("option-item");
+                div.setAttribute("draggable", "true");
+                div.setAttribute("data-option", option);
+                div.textContent = option;
+                div.addEventListener("dragstart", dragStart);
+                div.addEventListener("dragend", dragEnd);
+                optionsList.appendChild(div);
+            }
+        }
+
+        function submitSequence() {
+            stopTimer();
+            const isCorrect = userSequence.every((opt, index) => opt === currentSet.correctSequence[index]);
+
+            if (isCorrect) {
+                feedbackElement.textContent = "Correct! Well Done!";
+                feedbackElement.classList.add("correct");
+                feedbackElement.classList.remove("incorrect");
+            } else {
+                feedbackElement.textContent = `Incorrect. The correct sequence is: ${currentSet.correctSequence.join(" → ")}.`;
+                feedbackElement.classList.add("incorrect");
+                feedbackElement.classList.remove("correct");
+                retryBtn.style.display = "inline-block";
+            }
+
+            feedbackElement.style.display = "block";
+            submitBtn.disabled = true;
+        }
+
+        function retry() {
+            initializeSet();
+        }
+
+        // Initialize the activity
+        initializeSet();
+    </script>
+</body>
+</html>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Hygiene Training for Nurses</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #2c3e50;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 1000px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #0288d1;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #0277bd;
+            margin: 20px 0 10px;
+        }
+
+        p {
+            font-size: 24px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .task-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .reorder-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .options-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-height: 300px;
+        }
+
+        .reference-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-height: 300px;
+        }
+
+        .option {
+            background-color: #ffffff;
+            border: 2px solid #0288d1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: move;
+            font-size: 16px;
+            font-weight: 500;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            user-select: none;
+            text-align: left;
+        }
+
+        .reference-item {
+            background-color: #e1f5fe;
+            border: 2px solid #4fc3f7;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .option:hover {
+            transform: scale(1.05);
+        }
+
+        .option.dragging {
+            opacity: 0.5;
+        }
+
+        .option.drag-over {
+            background-color: #b3e5fc;
+        }
+
+        .task-section.incorrect .option {
+            background-color: #ffebee;
+        }
+
+        .task-section.correct .option {
+            background-color: #e8f5e9;
+        }
+
+        .scenario-box {
+            background-color: #e1f5fe;
+            border: 2px solid #4fc3f7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #0288d1;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #0277bd;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-size: 16px;
+            font-style: italic;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .correct {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .incorrect {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .submit-btn, .next-btn {
+            background-color: #0288d1;
+            color: #ffffff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .submit-btn:hover, .next-btn:hover {
+            background-color: #0277bd;
+            transform: scale(1.05);
+        }
+
+        .submit-btn:disabled, .next-btn:disabled {
+            background-color: #b0bec5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 800px) {
+            .reorder-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .option, .reference-item {
+                font-size: 16px;
+                padding: 6px 10px;
+            }
+
+            select {
+                font-size: 16px;
+                padding: 6px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            p, .feedback {
+                font-size: 14px;
+            }
+
+            .submit-btn, .next-btn {
+                font-size: 14px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hand Hygiene Training for Nurses</h1>
+        <p></p>
+
+        <!-- Task 1: Rearrange Steps Only -->
+        <div class="task-section" id="task1-section">
+            <h2>Task 1: Rearrange Steps of Hand Hygiene</h2>
+            <p></p>
+            <div class="reorder-container">
+                <div class="options-column" id="steps-options-list">
+                    <h2>Steps of Hand Hygiene</h2>
+                    <!-- Steps will be dynamically generated -->
+                </div>
+                <div class="reference-column" id="moments-reference-list">
+                    <h2>Moments of Hand Hygiene (Reference)</h2>
+                    <!-- Moments will be statically displayed -->
+                </div>
+            </div>
+            <div class="feedback" id="task1-feedback"></div>
+            <button class="submit-btn" id="task1-submit-btn" onclick="submitTask1()">Submit Order</button>
+            <button class="next-btn" id="task1-next-btn" onclick="startTask2()" disabled>Proceed to Task 2</button>
+        </div>
+
+        <!-- Task 2: Identify Moments in Scenarios -->
+        <div class="task-section" id="task2-section" style="display: none;">
+            <h2>Task 2: Identify Moments of Hand Hygiene</h2>
+            <p></p>
+            <div class="scenario-box" id="scenario-box">
+                <p id="scenario-text">Scenario text will be displayed here.</p>
+            </div>
+            <select id="moment-select" onchange="enableTask2Submit()">
+                <option value="0">Select a Moment</option>
+                <option value="1">Before touching a patient</option>
+                <option value="2">Before clean/aseptic procedures</option>
+                <option value="3">After body fluid exposure/risk</option>
+                <option value="4">After touching a patient</option>
+                <option value="5">After touching patient surroundings</option>
+            </select>
+            <div class="feedback" id="task2-feedback"></div>
+            <button class="submit-btn" id="task2-submit-btn" onclick="submitTask2()" disabled>Submit Selection</button>
+            <button class="next-btn" id="task2-next-btn" onclick="nextScenario()" disabled>Next Scenario</button>
+        </div>
+    </div>
+
+    <script>
+        // Task 1 Data: Disordered Steps and Correct Moments
+        const disorderedSteps = [
+            { id: 5, description: "Rottational Rubbing of the Thumb" },
+            { id: 4, description: "Fingers Interlocked and vice versa" },
+            { id: 6, description: "Rottational Rubbing of the Tip of the Fingers Inside the palm in Circular motion and vice versa" },
+            { id: 2, description: "Rub backs of hands and vice versa" },
+            { id: 1, description: "Rub hands Palm to Palm" },
+            { id: 3, description: "Fingers Interlaced" }
+        ];
+
+        const correctStepsOrder = [
+            "Rub hands Palm to Palm",
+            "Rub backs of hands and vice versa",
+            "Fingers Interlaced",
+            "Fingers Interlocked and vice versa",
+            "Rottational Rubbing of the Thumb",
+            "Rottational Rubbing of the Tip of the Fingers Inside the palm in Circular motion and vice versa"
+        ];
+
+        const correctMomentsOrder = [
+            { id: 1, description: "Before touching a patient" },
+            { id: 2, description: "Before clean/aseptic procedures" },
+            { id: 3, description: "After body fluid exposure/risk" },
+            { id: 4, description: "After touching a patient" },
+            { id: 5, description: "After touching patient surroundings" }
+        ];
+
+        let currentStepsOrder = [...disorderedSteps];
+
+        // Task 2 Data: Scenarios
+        const scenarios = [
+            {
+                description: "A nurse is about to examine a patient’s wound.",
+                correctMomentId: 1,
+                explanation: "Hand hygiene is required before touching a patient to prevent the transmission of pathogens."
+            },
+            {
+                description: "A nurse is preparing to insert a urinary catheter.",
+                correctMomentId: 2,
+                explanation: "Hand hygiene is critical before performing clean or aseptic procedures to reduce the risk of infection."
+            },
+            {
+                description: "A nurse just cleaned up a patient’s vomit.",
+                correctMomentId: 3,
+                explanation: "Hand hygiene is necessary after exposure to body fluids to prevent contamination and spread of pathogens."
+            },
+            {
+                description: "A nurse finishes taking a patient’s blood pressure.",
+                correctMomentId: 4,
+                explanation: "Hand hygiene is required after touching a patient to prevent the spread of microorganisms."
+            },
+            {
+                description: "A nurse adjusts the patient’s bed rail after leaving the room.",
+                correctMomentId: 5,
+                explanation: "Hand hygiene is needed after touching patient surroundings to avoid transferring pathogens to other areas."
+            },
+{
+                description: "A nurse adjusts the height of patient’s bed before leaving the room.",
+                correctMomentId: 5,
+                explanation: "Hand hygiene is needed after touching patient surroundings to avoid transferring pathogens to other areas."
+            }
+        ];
+
+        let currentScenarioIndex = 0;
+
+        // Task 1 Elements
+        const task1Section = document.getElementById("task1-section");
+        const stepsOptionsList = document.getElementById("steps-options-list");
+        const momentsReferenceList = document.getElementById("moments-reference-list");
+        const task1Feedback = document.getElementById("task1-feedback");
+        const task1SubmitBtn = document.getElementById("task1-submit-btn");
+        const task1NextBtn = document.getElementById("task1-next-btn");
+
+        // Task 2 Elements
+        const task2Section = document.getElementById("task2-section");
+        const scenarioText = document.getElementById("scenario-text");
+        const momentSelect = document.getElementById("moment-select");
+        const task2Feedback = document.getElementById("task2-feedback");
+        const task2SubmitBtn = document.getElementById("task2-submit-btn");
+        const task2NextBtn = document.getElementById("task2-next-btn");
+
+        // Task 1: Initialize Rearrangement for Steps Only
+        function initializeTask1() {
+            currentStepsOrder = [...disorderedSteps];
+            stepsOptionsList.innerHTML = "<h2>Steps of Hand Hygiene</h2>";
+            momentsReferenceList.innerHTML = "<h2>Moments of Hand Hygiene (Reference)</h2>";
+            task1Feedback.style.display = "none";
+            task1SubmitBtn.disabled = false;
+            task1NextBtn.disabled = true;
+
+            // Populate Steps (Draggable)
+            currentStepsOrder.forEach(opt => {
+                const div = document.createElement("div");
+                div.classList.add("option");
+                div.setAttribute("draggable", "true");
+                div.setAttribute("data-id", opt.id);
+                div.setAttribute("data-description", opt.description);
+                div.setAttribute("data-type", "steps");
+                div.textContent = opt.description;
+                div.addEventListener("dragstart", dragStart);
+                div.addEventListener("dragover", dragOver);
+                div.addEventListener("dragleave", dragLeave);
+                div.addEventListener("drop", drop);
+                div.addEventListener("dragend", dragEnd);
+                stepsOptionsList.appendChild(div);
+            });
+
+            // Populate Moments (Static Reference)
+            correctMomentsOrder.forEach(opt => {
+                const div = document.createElement("div");
+                div.classList.add("reference-item");
+                div.textContent = opt.description;
+                momentsReferenceList.appendChild(div);
+            });
+        }
+
+        function dragStart(e) {
+            e.target.classList.add("dragging");
+            e.dataTransfer.setData("text/plain", JSON.stringify({
+                id: e.target.getAttribute("data-id"),
+                description: e.target.getAttribute("data-description"),
+                type: e.target.getAttribute("data-type")
+            }));
+        }
+
+        function dragEnd(e) {
+            e.target.classList.remove("dragging");
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+            e.target.classList.add("drag-over");
+        }
+
+        function dragLeave(e) {
+            e.target.classList.remove("drag-over");
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            e.target.classList.remove("drag-over");
+            const data = JSON.parse(e.dataTransfer.getData("text/plain"));
+            const draggedId = parseInt(data.id);
+            const draggedDescription = data.description;
+            const draggedType = data.type;
+            const targetId = parseInt(e.target.getAttribute("data-id"));
+            const targetType = e.target.getAttribute("data-type");
+
+            if (draggedType !== targetType) return; // Prevent cross-list dragging (though only one list is draggable)
+
+            const list = stepsOptionsList;
+            const currentItems = currentStepsOrder;
+            const draggedElement = document.querySelector(`.option[data-id="${draggedId}"][data-type="${draggedType}"]`);
+            const targetElement = e.target;
+
+            const items = Array.from(list.children).filter(child => child.classList.contains("option"));
+            const draggedIndex = items.indexOf(draggedElement);
+            const targetIndex = items.indexOf(targetElement);
+
+            // Update the current order
+            const [removed] = currentItems.splice(draggedIndex, 1);
+            currentItems.splice(targetIndex, 0, removed);
+
+            // Re-render the list
+            list.innerHTML = "<h2>Steps of Hand Hygiene</h2>";
+            currentItems.forEach(opt => {
+                const div = document.createElement("div");
+                div.classList.add("option");
+                div.setAttribute("draggable", "true");
+                div.setAttribute("data-id", opt.id);
+                div.setAttribute("data-description", opt.description);
+                div.setAttribute("data-type", draggedType);
+                div.textContent = opt.description;
+                div.addEventListener("dragstart", dragStart);
+                div.addEventListener("dragover", dragOver);
+                div.addEventListener("dragleave", dragLeave);
+                div.addEventListener("drop", drop);
+                div.addEventListener("dragend", dragEnd);
+                list.appendChild(div);
+            });
+        }
+
+        function submitTask1() {
+            const stepsCorrect = currentStepsOrder.every((opt, index) => opt.description === correctStepsOrder[index]);
+
+            let feedbackText = "";
+            if (stepsCorrect) {
+                feedbackText = "Correct! The steps of hand hygiene are in the right order.";
+                task1Feedback.classList.add("correct");
+                task1Section.classList.add("correct");
+            } else {
+                feedbackText = `Incorrect. The correct order for steps is: ${correctStepsOrder.join(", ")}.`;
+                task1Feedback.classList.add("incorrect");
+                task1Section.classList.add("incorrect");
+            }
+
+            task1Feedback.textContent = feedbackText;
+            task1Feedback.style.display = "block";
+            task1SubmitBtn.disabled = true;
+            task1NextBtn.disabled = false;
+        }
+
+        // Task 2: Identify Moments in Scenarios
+        function startTask2() {
+            task1Section.style.display = "none";
+            task2Section.style.display = "block";
+            currentScenarioIndex = 0;
+            initializeTask2();
+        }
+
+        function initializeTask2() {
+            const currentScenario = scenarios[currentScenarioIndex];
+            scenarioText.textContent = currentScenario.description;
+            momentSelect.value = "0";
+            task2Feedback.style.display = "none";
+            task2SubmitBtn.disabled = true;
+            task2NextBtn.disabled = true;
+        }
+
+        function enableTask2Submit() {
+            task2SubmitBtn.disabled = momentSelect.value === "0";
+        }
+
+        function submitTask2() {
+            const selectedMoment = parseInt(momentSelect.value);
+            const currentScenario = scenarios[currentScenarioIndex];
+            const isCorrect = selectedMoment === currentScenario.correctMomentId;
+
+            if (isCorrect) {
+                task2Feedback.textContent = `Correct! ${currentScenario.explanation}`;
+                task2Feedback.classList.add("correct");
+            } else {
+                const correctOption = momentSelect.options[currentScenario.correctMomentId].text;
+                task2Feedback.textContent = `Incorrect. The correct moment is "${correctOption}". ${currentScenario.explanation}`;
+                task2Feedback.classList.add("incorrect");
+            }
+
+            task2Feedback.style.display = "block";
+            task2SubmitBtn.disabled = true;
+            task2NextBtn.disabled = false;
+        }
+
+        function nextScenario() {
+            currentScenarioIndex++;
+            if (currentScenarioIndex < scenarios.length) {
+                initializeTask2();
+            } else {
+                task2Section.innerHTML = `
+                    <h2>Training Complete!</h2>
+                    <p>Congratulations! You have completed the hand hygiene training by identifying the moments in all scenarios.</p>
+                `;
+            }
+        }
+
+        // Initialize Task 1
+        initializeTask1();
+    </script>
+</body>
+</html>

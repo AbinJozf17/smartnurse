@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infection Control Care Bundles Training</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            color: #2c3e50;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #d32f2f;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #0277bd;
+            margin-bottom: 20px;
+        }
+
+        .instructions {
+            font-size: 16px;
+            color: #0277bd;
+            margin-bottom: 20px;
+            text-align: center;
+            background: #ffffff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1000px;
+            gap: 20px;
+        }
+
+        .drop-zone, .options-zone {
+            flex: 1;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 3px solid #0288d1;
+            padding: 15px;
+            min-height: 400px;
+        }
+
+        .drop-zone h3, .options-zone h3 {
+            font-size: 18px;
+            color: #0277bd;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .drop-zone.dropzone {
+            outline: 2px solid #0288d1;
+            outline-offset: -2px;
+        }
+
+        .option, .dropped-option {
+            background-color: #e1f5fe;
+            border: 2px solid #0288d1;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 14px;
+            cursor: move;
+            transition: background-color 0.3s ease;
+            display: block;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .option:hover, .dropped-option:hover {
+            background-color: #b3e5fc;
+        }
+
+        .option.dragging, .dropped-option.dragging {
+            opacity: 0.5;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            display: none;
+            text-align: center;
+        }
+
+        .feedback.correct {
+            color: #388e3c;
+        }
+
+        .feedback.incorrect {
+            color: #d32f2f;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .submit-btn, .next-btn, .reset-btn {
+            background: linear-gradient(45deg, #0288d1 0%, #d32f2f 100%);
+            color: #ffffff;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .next-btn {
+            background: linear-gradient(45deg, #388e3c 0%, #66bb6a 100%);
+            display: none;
+        }
+
+        .reset-btn {
+            background: linear-gradient(45deg, #ff9800 0%, #ff5722 100%);
+            display: none;
+        }
+
+        .submit-btn:hover, .next-btn:hover, .reset-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #2c3e50;
+            opacity: 0.7;
+        }
+
+        /* Responsive design */
+        @media (max-width: 800px) {
+            .task-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .drop-zone, .options-zone {
+                min-height: 300px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            .instructions {
+                font-size: 14px;
+            }
+
+            .option, .dropped-option {
+                font-size: 12px;
+                padding: 8px;
+            }
+
+            .submit-btn, .next-btn, .reset-btn {
+                font-size: 14px;
+                padding: 10px 25px;
+            }
+
+            .feedback {
+                font-size: 16px;
+            }
+
+            footer {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Infection Control Care Bundles Training</h1>
+    <h2 id="task-title">Task 1: CAUTI Bundle</h2>
+    <div class="instructions" id="instructions">
+        Drag and drop the correct steps for the bundle from the left to the right. The order does not matter as long as the correct steps are selected. You can rearrange steps in the drop zone if misplaced.
+    </div>
+
+    <div class="task-container">
+        <!-- Options Zone (Left Side) -->
+        <div class="options-zone" id="options-zone">
+            <h3>Options</h3>
+            <!-- Options will be populated dynamically -->
+        </div>
+
+        <!-- Drop Zone (Right Side) -->
+        <div class="drop-zone" id="drop-zone">
+            <h3>Bundle Steps (Drop Here)</h3>
+            <!-- Options will be dropped directly here -->
+        </div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <div class="buttons">
+        <button class="submit-btn" onclick="checkAnswers()">Submit</button>
+        <button class="reset-btn" id="reset-btn" onclick="resetTask()">Reset</button>
+        <button class="next-btn" id="next-btn" onclick="nextTask()">Next Task</button>
+    </div>
+
+    <footer>Prepared by Kuriakose John</footer>
+
+    <script>
+        const tasks = [
+            {
+                title: "Task 1: CAUTI Bundle",
+                correctSteps: [
+                    "Insert catheters only for appropriate indications.",
+                    "Follow aseptic insertion techniques.",
+                    "Perform daily review of catheter necessity.",
+                    "Ensure proper catheter maintenance (e.g., secure, unobstructed flow)."
+                ],
+                options: [
+                    "Insert catheters only for appropriate indications.",
+                    "Follow aseptic insertion techniques.",
+                    "Perform daily review of catheter necessity.",
+                    "Ensure proper catheter maintenance (e.g., secure, unobstructed flow).",
+                    "Administer prophylactic antibiotics",
+                    "Change catheter weekly regardless of need"
+                ]
+            },
+            {
+                title: "Task 2: CLABSI Bundle",
+                correctSteps: [
+                    "Perform hand hygiene before insertion.",
+                    "Use maximal sterile barrier precautions.",
+                    "Apply chlorhexidine skin antisepsis.",
+                    "Select optimal catheter site (e.g., avoid femoral vein)."
+                ],
+                options: [
+                    "Perform hand hygiene before insertion.",
+                    "Use maximal sterile barrier precautions.",
+                    "Apply chlorhexidine skin antisepsis.",
+                    "Select optimal catheter site (e.g., avoid femoral vein).",
+                    "Use alcohol wipes only for skin prep",
+                    "Change dressings monthly"
+                ]
+            },
+            {
+                title: "Task 3: SSI Bundle",
+                correctSteps: [
+                    "Administer prophylactic antibiotics within 1 hour before incision.",
+                    "Ensure proper hair removal (clipping, not shaving).",
+                    "Maintain normothermia during surgery.",
+                    "Control perioperative glucose levels."
+                ],
+                options: [
+                    "Administer prophylactic antibiotics within 1 hour before incision.",
+                    "Ensure proper hair removal (clipping, not shaving).",
+                    "Maintain normothermia during surgery.",
+                    "Control perioperative glucose levels.",
+                    "Apply antibiotic ointment to incision site",
+                    "Skip hand hygiene if wearing gloves"
+                ]
+            },
+            {
+                title: "Task 4: VAP Bundle",
+                correctSteps: [
+                    "Elevate head of bed 30–45 degrees.",
+                    "Perform regular oral care with chlorhexidine.",
+                    "Use subglottic suctioning ETT if available.",
+                    "Assess readiness to extubate daily."
+                ],
+                options: [
+                    "Elevate head of bed 30–45 degrees.",
+                    "Perform regular oral care with chlorhexidine.",
+                    "Use subglottic suctioning ETT if available.",
+                    "Assess readiness to extubate daily.",
+                    "Administer IV antibiotics prophylactically",
+                    "Keep head of bed flat for comfort"
+                ]
+            }
+        ];
+
+        let currentTaskIndex = 0;
+        let optionElements = [];
+
+        function loadTask() {
+            const task = tasks[currentTaskIndex];
+            const taskTitle = document.getElementById("task-title");
+            const instructions = document.getElementById("instructions");
+            if (!taskTitle || !instructions) {
+                console.error("Task title or instructions element not found");
+                return;
+            }
+            taskTitle.textContent = task.title;
+            instructions.textContent = `Drag and drop the correct and suitable ${task.title.split(": ")[1]} Actionables from the left box to the right box. `;
+
+            // Clear drop zone
+            const dropZone = document.getElementById("drop-zone");
+            if (!dropZone) {
+                console.error("Drop zone element not found");
+                return;
+            }
+            dropZone.innerHTML = "<h3>Bundle Steps (Drop Here)</h3>";
+            dropZone.addEventListener("dragover", allowDrop);
+            dropZone.addEventListener("drop", drop);
+
+            // Populate options
+            const optionsZone = document.getElementById("options-zone");
+            if (!optionsZone) {
+                console.error("Options zone element not found");
+                return;
+            }
+            optionsZone.innerHTML = "<h3>Options</h3>";
+            optionElements = [];
+            const shuffledOptions = [...task.options];
+            shuffleArray(shuffledOptions);
+            shuffledOptions.forEach((option, index) => {
+                const div = document.createElement("div");
+                div.className = "option";
+                div.id = `option-${index}`;
+                div.textContent = option;
+                div.draggable = true;
+                div.addEventListener("dragstart", drag);
+                div.style.display = "block";
+                optionsZone.appendChild(div);
+                optionElements.push({ id: `option-${index}`, element: div, originalText: option });
+            });
+
+            // Reset feedback and buttons
+            const feedbackElement = document.getElementById("feedback");
+            const nextBtn = document.getElementById("next-btn");
+            const resetBtn = document.getElementById("reset-btn");
+            if (!feedbackElement || !nextBtn || !resetBtn) {
+                console.error("Feedback, next button, or reset button element not found");
+                return;
+            }
+            feedbackElement.style.display = "none";
+            nextBtn.style.display = "none";
+            resetBtn.style.display = "none";
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+            const dropzone = event.target.closest('.drop-zone');
+            if (dropzone) {
+                dropzone.classList.add('dropzone');
+            }
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.id);
+            event.target.classList.add('dragging');
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const id = event.dataTransfer.getData("text");
+            const draggableElement = document.getElementById(id);
+            if (!draggableElement) return;
+
+            const dropzone = event.target.closest('.drop-zone');
+            if (!dropzone) return;
+
+            // Check if the option is already in the drop zone (rearranging within drop zone)
+            const existingOption = dropzone.querySelector(`#dropped-${id}`);
+            if (existingOption) {
+                // If dragging within the drop zone, do nothing (already in drop zone)
+                dropzone.classList.remove('dropzone');
+                return;
+            }
+
+            // If the option is coming from the options zone, create a new dropped option
+            const droppedOption = document.createElement("div");
+            droppedOption.className = "dropped-option";
+            droppedOption.id = `dropped-${id}`;
+            droppedOption.textContent = draggableElement.textContent;
+            droppedOption.draggable = true;
+            droppedOption.addEventListener("dragstart", drag);
+            dropzone.appendChild(droppedOption);
+
+            // Hide the original option from the options zone
+            draggableElement.style.display = "none";
+
+            // If dragging a dropped option back to the options zone
+            const optionsZone = document.getElementById("options-zone");
+            if (event.target.closest('.options-zone') === optionsZone) {
+                const optionText = draggableElement.textContent;
+                const optionElement = optionElements.find(opt => opt.originalText === optionText);
+                if (optionElement) {
+                    optionElement.element.style.display = "block";
+                }
+                draggableElement.remove();
+            }
+
+            dropzone.classList.remove('dropzone');
+        }
+
+        function checkAnswers() {
+            const task = tasks[currentTaskIndex];
+            const dropZone = document.getElementById("drop-zone");
+            const droppedOptions = Array.from(dropZone.querySelectorAll('.dropped-option')).map(opt => opt.textContent);
+
+            // Check if the dropped options match the correct steps, regardless of order
+            const correctSteps = [...task.correctSteps];
+            let allCorrect = droppedOptions.length === correctSteps.length;
+
+            if (allCorrect) {
+                droppedOptions.forEach(opt => {
+                    const index = correctSteps.indexOf(opt);
+                    if (index === -1) {
+                        allCorrect = false;
+                    } else {
+                        correctSteps.splice(index, 1); // Remove matched step to handle duplicates
+                    }
+                });
+            }
+
+            const feedbackElement = document.getElementById("feedback");
+            const nextBtn = document.getElementById("next-btn");
+            const resetBtn = document.getElementById("reset-btn");
+            if (!feedbackElement || !nextBtn || !resetBtn) {
+                console.error("Feedback, next button, or reset button element not found");
+                return;
+            }
+            feedbackElement.style.display = "block";
+            if (allCorrect) {
+                feedbackElement.textContent = "Correct! Well Done!";
+                feedbackElement.classList.add("correct");
+                feedbackElement.classList.remove("incorrect");
+                nextBtn.style.display = currentTaskIndex < tasks.length - 1 ? "inline-block" : "none";
+                resetBtn.style.display = "none";
+            } else {
+                feedbackElement.textContent = "Incorrect. Please try again.";
+                feedbackElement.classList.add("incorrect");
+                feedbackElement.classList.remove("correct");
+                nextBtn.style.display = "none";
+                resetBtn.style.display = "inline-block";
+            }
+        }
+
+        function resetTask() {
+            loadTask();
+        }
+
+        function nextTask() {
+            currentTaskIndex++;
+            if (currentTaskIndex < tasks.length) {
+                loadTask();
+            }
+        }
+
+        // Load initial task on page load
+        window.onload = function() {
+            loadTask();
+        };
+    </script>
+</body>
+</html>

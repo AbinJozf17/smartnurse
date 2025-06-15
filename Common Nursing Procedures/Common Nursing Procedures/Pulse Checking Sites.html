@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nursing Training: Identify Pulse Checking Sites</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #2c3e50;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+            border: 8px solid #42a5f5;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #ef5350;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .instructions {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #0288d1;
+            font-weight: bold;
+        }
+
+        .image-container {
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .body-image {
+            max-width: 100%;
+            height: auto;
+            border: 3px solid #7e57c2;
+            border-radius: 10px;
+            display: block; /* Ensure the image behaves as a block element */
+            margin: 0 auto; /* Center the image */
+        }
+
+        area {
+            cursor: pointer;
+            outline: none;
+        }
+
+        area:hover {
+            background: rgba(66, 165, 245, 0.2); /* Subtle highlight on hover */
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .feedback.correct {
+            background-color: #90ee90;
+            color: #006400;
+            border: 2px solid #006400;
+        }
+
+        .feedback.incorrect {
+            background-color: #ff6347;
+            color: #8b0000;
+            border: 2px solid #8b0000;
+        }
+
+        .feedback.show {
+            opacity: 1;
+        }
+
+        .highlight {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #ffd700;
+            border-radius: 50%;
+            background-color: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 15px #ffd700;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .highlight.show {
+            opacity: 1;
+        }
+
+        .next-btn {
+            background: linear-gradient(45deg, #42a5f5 0%, #ef5350 100%);
+            color: #ffffff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 15px; /* Space between image and button */
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: inline-block; /* Ensure the button is centered */
+        }
+
+        .next-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .instructions {
+                font-size: 16px;
+            }
+
+            .feedback {
+                font-size: 16px;
+            }
+
+            .next-btn {
+                font-size: 14px;
+                padding: 10px 25px;
+                margin-top: 10px; /* Slightly less margin on smaller screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Identify Pulse Checking Sites</h1>
+        <p class="instructions" id="instructions">Click on the Radial Pulse site.</p>
+
+        <div class="image-container" id="image-container">
+            <img src="///D:/VITAL - Nursing Interactive Module/Common Nursing Procedures/Images/human_body.PNG" alt="Human Body" usemap="#pulse-map" class="body-image">
+            <map name="pulse-map">
+                <!-- Radial Pulse (Right Wrist) -->
+                <area shape="circle" coords="420,550,20" href="#" alt="Radial Pulse" onclick="checkPulse('Radial Pulse'); return false;">
+                <!-- Carotid Pulse (Right Neck) -->
+                <area shape="circle" coords="280,100,20" href="#" alt="Carotid Pulse" onclick="checkPulse('Carotid Pulse'); return false;">
+                <!-- Femoral Pulse (Right Groin) -->
+                <area shape="circle" coords="300,350,20" href="#" alt="Femoral Pulse" onclick="checkPulse('Femoral Pulse'); return false;">
+                <!-- Brachial Pulse (Right Arm) -->
+                <area shape="circle" coords="380,300,20" href="#" alt="Brachial Pulse" onclick="checkPulse('Brachial Pulse'); return false;">
+                <!-- Popliteal Pulse (Behind Right Knee) -->
+                <area shape="circle" coords="290,600,20" href="#" alt="Popliteal Pulse" onclick="checkPulse('Popliteal Pulse'); return false;">
+            </map>
+            <!-- Highlight for showing correct site -->
+            <div class="highlight" id="highlight"></div>
+            <!-- Next Challenge button moved here -->
+            <button class="next-btn" onclick="nextChallenge()">Next Challenge</button>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <script>
+        const pulseSites = [
+            { name: "Radial Pulse", description: "right wrist", coords: { x: 360, y: 195 } },
+            { name: "Carotid Pulse", description: "right side of the neck", coords: { x: 405, y: 80 } },
+	    { name: "Apical pulse", description: "right side of the neck", coords: { x: 418, y: 117 } },
+            { name: "Femoral Pulse", description: "right groin area", coords: { x: 395, y: 210 } },
+            { name: "Brachial Pulse", description: "right upper arm", coords: { x: 365, y: 160 } },
+	    { name: "Dorsalis pedis Pulse", description: "right upper arm", coords: { x: 380, y: 375 } },
+	    { name: "posterior tibial Pulse", description: "right upper arm", coords: { x: 390, y: 370 } },
+            { name: "Popliteal Pulse", description: "behind the right knee", coords: { x: 390, y: 290 } }
+        ];
+
+        let currentPulseSite = null;
+        const instructionsElement = document.getElementById("instructions");
+        const feedbackElement = document.getElementById("feedback");
+        const highlightElement = document.getElementById("highlight");
+        const imageContainer = document.getElementById("image-container");
+
+        function selectPulseSite() {
+            const randomIndex = Math.floor(Math.random() * pulseSites.length);
+            currentPulseSite = pulseSites[randomIndex];
+            instructionsElement.textContent = `Click on the ${currentPulseSite.name} site.`;
+            resetFeedback();
+        }
+
+        function checkPulse(site) {
+            if (site === currentPulseSite.name) {
+                feedbackElement.textContent = "Well Done!";
+                feedbackElement.classList.remove("incorrect");
+                feedbackElement.classList.add("correct", "show");
+                highlightElement.classList.remove("show");
+            } else {
+                feedbackElement.textContent = `Incorrect. The ${currentPulseSite.name} is located at the ${currentPulseSite.description}. Try again!`;
+                feedbackElement.classList.remove("correct");
+                feedbackElement.classList.add("incorrect", "show");
+                // Show the correct site
+                highlightElement.style.left = `${currentPulseSite.coords.x - 20}px`; // Center the 40x40 highlight
+                highlightElement.style.top = `${currentPulseSite.coords.y - 20}px`;
+                highlightElement.classList.add("show");
+            }
+        }
+
+        // Handle clicks outside the defined pulse areas
+        document.querySelector(".body-image").addEventListener("click", function(e) {
+            const mapAreas = document.querySelectorAll("area");
+            let clickedOnArea = false;
+
+            mapAreas.forEach(area => {
+                const coords = area.coords.split(",").map(Number);
+                const radius = coords[2];
+                const centerX = coords[0];
+                const centerY = coords[1];
+
+                const imgRect = this.getBoundingClientRect();
+                const clickX = e.clientX - imgRect.left;
+                const clickY = e.clientY - imgRect.top;
+
+                const distance = Math.sqrt(Math.pow(clickX - centerX, 2) + Math.pow(clickY - centerY, 2));
+                if (distance <= radius) {
+                    clickedOnArea = true;
+                }
+            });
+
+            if (!clickedOnArea) {
+                feedbackElement.textContent = `Incorrect. The ${currentPulseSite.name} is located at the ${currentPulseSite.description}. Try again!`;
+                feedbackElement.classList.remove("correct");
+                feedbackElement.classList.add("incorrect", "show");
+                // Show the correct site
+                highlightElement.style.left = `${currentPulseSite.coords.x - 20}px`;
+                highlightElement.style.top = `${currentPulseSite.coords.y - 20}px`;
+                highlightElement.classList.add("show");
+            }
+        });
+
+        function resetFeedback() {
+            feedbackElement.textContent = "";
+            feedbackElement.classList.remove("correct", "incorrect", "show");
+            highlightElement.classList.remove("show");
+        }
+
+        function nextChallenge() {
+            selectPulseSite();
+        }
+
+        // Initialize the first challenge
+        selectPulseSite();
+    </script>
+</body>
+</html>

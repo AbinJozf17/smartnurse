@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPSG Goals Awareness Session</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #2c3e50;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #0288d1;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #0277bd;
+            margin: 20px 0 10px;
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .task-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .match-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .ipsg-column, .goals-column {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-height: 300px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .ipsg-column {
+            background: linear-gradient(45deg, #bbdefb 0%, #e1bee7 100%);
+            border: 2px solid #7e57c2;
+            flex: 0 0 100px; /* Fixed narrow width */
+        }
+
+        .goals-column {
+            background: linear-gradient(45deg, #c8e6c9 0%, #dcedc8 100%);
+            border: 2px solid #66bb6a;
+            flex: 1; /* Takes remaining space */
+        }
+
+        .ipsg-box, .goal-option {
+            height: 40px; /* Fixed height for alignment */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 8px;
+        }
+
+        .ipsg-box {
+            background-color: #ffffff;
+            border: 2px solid #0288d1;
+            text-align: center;
+        }
+
+        .goal-option {
+            background-color: #ffffff;
+            border: 2px solid #66bb6a;
+            padding: 8px 12px;
+            cursor: move;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            user-select: none;
+            text-align: left;
+            white-space: nowrap; /* Prevent text wrapping */
+            overflow: hidden; /* Hide overflow */
+            text-overflow: ellipsis; /* Add ellipsis for long text */
+        }
+
+        .goal-option:hover {
+            transform: scale(1.05);
+        }
+
+        .goal-option.dragging {
+            opacity: 0.5;
+        }
+
+        .goal-option.drag-over {
+            background-color: #b3e5fc;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-size: 16px;
+            font-style: italic;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .correct {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .incorrect {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .submit-btn, .retry-btn {
+            background-color: #0288d1;
+            color: #ffffff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .submit-btn:hover, .retry-btn:hover {
+            background-color: #0277bd;
+            transform: scale(1.05);
+        }
+
+        .submit-btn:disabled, .retry-btn:disabled {
+            background-color: #b0bec5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            .match-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .ipsg-column {
+                flex: 1; /* Allow left column to expand on smaller screens */
+            }
+
+            .ipsg-box, .goal-option {
+                font-size: 18px;
+                padding: 6px 10px;
+                height: 36px; /* Slightly smaller height on mobile */
+            }
+
+            .goal-option {
+                white-space: normal; /* Allow wrapping on smaller screens */
+                text-overflow: unset;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            p, .feedback {
+                font-size: 14px;
+            }
+
+            .submit-btn, .retry-btn {
+                font-size: 14px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>IPSG Goals Awareness Session</h1>
+        <p></p>
+
+        <!-- Task 1: Rearrange IPSG Goals -->
+        <div class="task-section" id="task1-section">
+            <h2>Rearrange IPSG Goals Correctly</h2>
+            <p></p>
+            <div class="match-container">
+                <div class="ipsg-column" id="ipsg-list">
+                    <div class="ipsg-box" data-ipsg="1">IPSG 1</div>
+                    <div class="ipsg-box" data-ipsg="2">IPSG 2</div>
+                    <div class="ipsg-box" data-ipsg="3">IPSG 3</div>
+                    <div class="ipsg-box" data-ipsg="4">IPSG 4</div>
+                    <div class="ipsg-box" data-ipsg="5">IPSG 5</div>
+                    <div class="ipsg-box" data-ipsg="6">IPSG 6</div>
+                </div>
+                <div class="goals-column" id="goals-list">
+                    <!-- Goals will be dynamically generated -->
+                </div>
+            </div>
+            <div class="feedback" id="task1-feedback"></div>
+            <button class="submit-btn" id="task1-submit-btn" onclick="submitTask1()">Submit Order</button>
+            <button class="retry-btn" id="task1-retry-btn" onclick="retryTask1()" disabled>Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Task 1 Data: IPSG Goals
+        const correctIpsgOrder = [
+            "Identify Patients Correctly", // IPSG 1
+            "Improve Effective Communication", // IPSG 2
+            "Improve the Safety of High-Alert Medications", // IPSG 3
+            "Ensure Correct Site, Correct Patient and Correct Procedure", // IPSG 4
+            "Reduce the Risk of Health Care-Associated Infections", // IPSG 5
+            "Reduce the Risk of Patient Harm Resulting from Falls" // IPSG 6
+        ];
+
+        // Define 3 different rearrangement patterns
+        const pattern1 = [
+            { id: 5, description: "Reduce the Risk of Health Care-Associated Infections" },
+            { id: 3, description: "Improve the Safety of High-Alert Medications" },
+            { id: 6, description: "Reduce the Risk of Patient Harm Resulting from Falls" },
+            { id: 1, description: "Identify Patients Correctly" },
+            { id: 4, description: "Ensure Correct Site, Correct Patient and Correct Procedure" },
+            { id: 2, description: "Improve Effective Communication" }
+        ];
+
+        const pattern2 = [
+            { id: 1, description: "Identify Patients Correctly" },
+            { id: 6, description: "Reduce the Risk of Patient Harm Resulting from Falls" },
+            { id: 2, description: "Improve Effective Communication" },
+            { id: 5, description: "Reduce the Risk of Health Care-Associated Infections" },
+            { id: 3, description: "Improve the Safety of High-Alert Medications" },
+            { id: 4, description: "Ensure Correct Site, Correct Patient and Correct Procedure" }
+        ];
+
+        const pattern3 = [
+            { id: 4, description: "Ensure Correct Site, Correct Patient and Correct Procedure" },
+            { id: 2, description: "Improve Effective Communication" },
+            { id: 5, description: "Reduce the Risk of Health Care-Associated Infections" },
+            { id: 3, description: "Improve the Safety of High-Alert Medications" },
+            { id: 1, description: "Identify Patients Correctly" },
+            { id: 6, description: "Reduce the Risk of Patient Harm Resulting from Falls" }
+        ];
+
+        const patterns = [pattern1, pattern2, pattern3];
+        let currentGoalsOrder = [];
+
+        // Task 1 Elements
+        const task1Section = document.getElementById("task1-section");
+        const goalsList = document.getElementById("goals-list");
+        const task1Feedback = document.getElementById("task1-feedback");
+        const task1SubmitBtn = document.getElementById("task1-submit-btn");
+        const task1RetryBtn = document.getElementById("task1-retry-btn");
+
+        // Task 1: Initialize IPSG Goals Rearrangement
+        function initializeTask1() {
+            // Randomly select one of the patterns
+            const randomPatternIndex = Math.floor(Math.random() * patterns.length);
+            currentGoalsOrder = [...patterns[randomPatternIndex]];
+
+            goalsList.innerHTML = "";
+            task1Feedback.style.display = "none";
+            task1SubmitBtn.disabled = false;
+            task1RetryBtn.disabled = true;
+
+            // Populate the goals column
+            currentGoalsOrder.forEach(opt => {
+                const div = document.createElement("div");
+                div.classList.add("goal-option");
+                div.setAttribute("draggable", "true");
+                div.setAttribute("data-id", opt.id);
+                div.setAttribute("data-description", opt.description);
+                div.textContent = opt.description;
+                div.addEventListener("dragstart", dragStart);
+                div.addEventListener("dragover", dragOver);
+                div.addEventListener("dragleave", dragLeave);
+                div.addEventListener("drop", drop);
+                div.addEventListener("dragend", dragEnd);
+                goalsList.appendChild(div);
+            });
+        }
+
+        function dragStart(e) {
+            e.target.classList.add("dragging");
+            e.dataTransfer.setData("text/plain", JSON.stringify({
+                id: e.target.getAttribute("data-id"),
+                description: e.target.getAttribute("data-description")
+            }));
+        }
+
+        function dragEnd(e) {
+            e.target.classList.remove("dragging");
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+            e.target.classList.add("drag-over");
+        }
+
+        function dragLeave(e) {
+            e.target.classList.remove("drag-over");
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            e.target.classList.remove("drag-over");
+            const data = JSON.parse(e.dataTransfer.getData("text/plain"));
+            const draggedId = parseInt(data.id);
+            const draggedDescription = data.description;
+            const targetId = parseInt(e.target.getAttribute("data-id"));
+
+            const draggedElement = document.querySelector(`.goal-option[data-id="${draggedId}"]`);
+            const targetElement = e.target;
+
+            const items = Array.from(goalsList.children);
+            const draggedIndex = items.indexOf(draggedElement);
+            const targetIndex = items.indexOf(targetElement);
+
+            // Update the current order
+            const [removed] = currentGoalsOrder.splice(draggedIndex, 1);
+            currentGoalsOrder.splice(targetIndex, 0, removed);
+
+            // Re-render the list
+            goalsList.innerHTML = "";
+            currentGoalsOrder.forEach(opt => {
+                const div = document.createElement("div");
+                div.classList.add("goal-option");
+                div.setAttribute("draggable", "true");
+                div.setAttribute("data-id", opt.id);
+                div.setAttribute("data-description", opt.description);
+                div.textContent = opt.description;
+                div.addEventListener("dragstart", dragStart);
+                div.addEventListener("dragover", dragOver);
+                div.addEventListener("dragleave", dragLeave);
+                div.addEventListener("drop", drop);
+                div.addEventListener("dragend", dragEnd);
+                goalsList.appendChild(div);
+            });
+        }
+
+        function submitTask1() {
+            const isCorrect = currentGoalsOrder.every((opt, index) => 
+                opt.description === correctIpsgOrder[index]
+            );
+
+            if (isCorrect) {
+                task1Feedback.textContent = "Correct! The IPSG goals are now in the right order (IPSG 1 to IPSG 6).";
+                task1Feedback.classList.add("correct");
+            } else {
+                task1Feedback.textContent = `Incorrect. The correct order is: ${correctIpsgOrder.join(", ")}.`;
+                task1Feedback.classList.add("incorrect");
+            }
+
+            task1Feedback.style.display = "block";
+            task1SubmitBtn.disabled = true;
+            task1RetryBtn.disabled = false;
+        }
+
+        function retryTask1() {
+            initializeTask1();
+        }
+
+        // Initialize Task 1
+        initializeTask1();
+    </script>
+</body>
+</html>

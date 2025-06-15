@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Hygiene Training Program</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #2c3e50;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 1000px;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #0288d1;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #0277bd;
+            margin: 20px 0 10px;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .task-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .big-box {
+            display: grid;
+            grid-template-columns: repeat(3, 280px);
+            grid-template-rows: repeat(2, 280px);
+            width: 840px; /* 3 boxes * 280px */
+            height: 560px; /* 2 boxes * 280px */
+            background-color: #e1f5fe;
+            border: 2px solid #4fc3f7;
+            border-radius: 10px;
+            margin: 0 auto 20px auto;
+        }
+
+        .option {
+            position: relative;
+            background-color: #ffffff;
+            border: 2px solid #0288d1;
+            border-radius: 8px;
+            cursor: move;
+            font-size: 14px;
+            font-weight: 500;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            user-select: none;
+            width: 280px;
+            height: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .option:hover {
+            transform: scale(1.02); /* Slightly smaller scale to avoid overlap */
+        }
+
+        .option.dragging {
+            opacity: 0.5;
+        }
+
+        .option.drag-over {
+            background-color: #b3e5fc;
+        }
+
+        .task-section.incorrect .option {
+            background-color: #ffebee;
+        }
+
+        .task-section.correct .option {
+            background-color: #e8f5e9;
+        }
+
+        .step-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .step-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .step-description {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 14px;
+            color: #2c3e50;
+            display: none; /* Hidden by default */
+            text-align: center;
+        }
+
+        .hint-btn {
+            background-color: #4fc3f7;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .hint-btn:hover {
+            background-color: #0288d1;
+            transform: scale(1.05);
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-size: 16px;
+            font-style: italic;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .correct {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .incorrect {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .submit-btn, .try-again-btn {
+            background-color: #0288d1;
+            color: #ffffff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .submit-btn:hover, .try-again-btn:hover {
+            background-color: #0277bd;
+            transform: scale(1.05);
+        }
+
+        .submit-btn:disabled, .try-again-btn:disabled {
+            background-color: #b0bec5;
+            cursor: not-allowed;
+        }
+
+        .footer {
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 14px;
+            color: #0277bd;
+            background-color: #ffffff;
+            border-top: 2px solid #0288d1;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+
+        @media (max-width: 800px) {
+            .big-box {
+                grid-template-columns: repeat(2, 160px);
+                grid-template-rows: repeat(3, 160px);
+                width: 320px; /* 2 boxes * 160px */
+                height: 480px; /* 3 boxes * 160px */
+            }
+
+            .option {
+                width: 160px;
+                height: 160px;
+            }
+
+            .step-description {
+                font-size: 12px;
+                padding: 3px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            p, .feedback {
+                font-size: 14px;
+            }
+
+            .submit-btn, .try-again-btn, .hint-btn {
+                font-size: 14px;
+                padding: 10px 20px;
+            }
+
+            .footer {
+                font-size: 12px;
+                padding: 8px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hand Hygiene Training Program</h1>
+        <p></p>
+
+        <!-- Task: Rearrange Hand Hygiene Steps -->
+        <div class="task-section" id="task-section">
+            <h2>Rearrange the Steps of Hand Hygiene</h2>
+            <div class="big-box" id="steps-options-list">
+                <!-- Steps will be dynamically generated -->
+            </div>
+            <div class="feedback" id="task-feedback"></div>
+            <button class="hint-btn" id="hint-btn" onclick="toggleHints()">Show Hints</button>
+            <button class="submit-btn" id="task-submit-btn" onclick="submitTask()">Submit Order</button>
+            <button class="try-again-btn" id="task-try-again-btn" onclick="tryAgainTask()" style="display: none;">Try Again</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        Prepared by Kuriakose John, Nurse Educator, Fortis Hospital Jaipur
+    </div>
+
+    <script>
+        // Task Data: Disordered Hand Hygiene Steps and Correct Order
+        const disorderedSteps = [
+            { id: 4, imagePath: "///D:/VITAL - Nursing Interactive Module/Infection Control/Hand Hygiene Images/4.png", description: "Fingers Interlocked" },
+            { id: 2, imagePath: "///D:/VITAL - Nursing Interactive Module/Infection Control/Hand Hygiene Images/2.png", description: "Palm to Back" },
+            { id: 5, imagePath: "///D:/VITAL - Nursing Interactive Module/Infection Control/Hand Hygiene Images/5.png", description: "Rottational Thub Rubbing" },  
+            { id: 1, imagePath: "///D:/VITAL - Nursing Interactive Module/Infection Control/Hand Hygiene Images/1.png", description: "Palm to Palm" },
+	    { id: 6, imagePath: "///D:/VITAL - Nursing Interactive Module/Infection Control/Hand Hygiene Images/6.png", description: "Tip of fingers in Circular Motion Inside the Palm " },
+            
+            { id: 3, imagePath: "///D:/VITAL - Nursing Interactive Module/Infection Control/Hand Hygiene Images/3.png", description: "Fingers Interlaced" }
+        ];
+
+        const correctStepsOrder = [1, 2, 3, 4, 5, 6];
+
+        let currentStepsOrder = [...disorderedSteps];
+        let instanceCounter = 0; // To generate unique IDs for boxes
+        let hintsVisible = false; // Track whether hints are visible
+
+        // Task Elements
+        const taskSection = document.getElementById("task-section");
+        const stepsOptionsList = document.getElementById("steps-options-list");
+        const taskFeedback = document.getElementById("task-feedback");
+        const taskSubmitBtn = document.getElementById("task-submit-btn");
+        const taskTryAgainBtn = document.getElementById("task-try-again-btn");
+        const hintBtn = document.getElementById("hint-btn");
+
+        // Initialize Rearrangement for Hand Hygiene Steps
+        function initializeTask() {
+            currentStepsOrder = [...disorderedSteps].sort(() => Math.random() - 0.5); // Shuffle steps
+            instanceCounter = 0; // Reset instance counter
+            stepsOptionsList.innerHTML = "";
+            taskFeedback.style.display = "none";
+            taskSubmitBtn.disabled = false;
+            taskTryAgainBtn.style.display = "none";
+            hintsVisible = false;
+            hintBtn.textContent = "Show Hints";
+
+            // Populate Hand Hygiene Steps (Draggable)
+            currentStepsOrder.forEach(step => {
+                instanceCounter++;
+                addStepBox(step, instanceCounter);
+            });
+        }
+
+        // Function to create a step box
+        function addStepBox(step, instanceId) {
+            const div = document.createElement("div");
+            div.classList.add("option");
+            div.setAttribute("draggable", "true"); // Ensure all boxes are draggable
+            div.setAttribute("data-id", step.id);
+            div.setAttribute("data-instance-id", instanceId);
+            div.setAttribute("data-type", "steps");
+
+            // Step content (image and description)
+            const contentDiv = document.createElement("div");
+            contentDiv.classList.add("step-content");
+
+            const img = document.createElement("img");
+            img.classList.add("step-image");
+            img.src = step.imagePath || "https://via.placeholder.com/280"; // Use predefined image path or fallback to placeholder
+            img.alt = step.description; // Use description for alt text
+            contentDiv.appendChild(img);
+
+            const descriptionDiv = document.createElement("div");
+            descriptionDiv.classList.add("step-description");
+            descriptionDiv.textContent = step.description;
+            contentDiv.appendChild(descriptionDiv);
+
+            div.appendChild(contentDiv);
+
+            // Add drag-and-drop event listeners to all boxes
+            div.addEventListener("dragstart", dragStart);
+            div.addEventListener("dragover", dragOver);
+            div.addEventListener("dragleave", dragLeave);
+            div.addEventListener("drop", drop);
+            div.addEventListener("dragend", dragEnd);
+
+            stepsOptionsList.appendChild(div);
+        }
+
+        // Toggle hints visibility
+        function toggleHints() {
+            hintsVisible = !hintsVisible;
+            hintBtn.textContent = hintsVisible ? "Hide Hints" : "Show Hints";
+            const descriptions = document.querySelectorAll(".step-description");
+            descriptions.forEach(desc => {
+                desc.style.display = hintsVisible ? "block" : "none";
+            });
+        }
+
+        function dragStart(e) {
+            const box = e.currentTarget; // Use currentTarget to ensure we get the box
+            box.classList.add("dragging");
+            e.dataTransfer.setData("text/plain", JSON.stringify({
+                id: box.getAttribute("data-id"),
+                instanceId: box.getAttribute("data-instance-id"),
+                type: box.getAttribute("data-type")
+            }));
+        }
+
+        function dragEnd(e) {
+            e.currentTarget.classList.remove("dragging");
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+            const box = e.currentTarget.closest(".option"); // Ensure we target the box
+            if (box) {
+                box.classList.add("drag-over");
+            }
+        }
+
+        function dragLeave(e) {
+            const box = e.currentTarget.closest(".option"); // Ensure we target the box
+            if (box) {
+                box.classList.remove("drag-over");
+            }
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            const targetBox = e.currentTarget.closest(".option"); // Find the closest box element
+            if (!targetBox) return; // Exit if no box is found
+
+            targetBox.classList.remove("drag-over");
+
+            const data = JSON.parse(e.dataTransfer.getData("text/plain"));
+            const draggedId = parseInt(data.id);
+            const draggedInstanceId = parseInt(data.instanceId);
+            const draggedType = data.type;
+
+            const targetId = parseInt(targetBox.getAttribute("data-id"));
+            const targetInstanceId = parseInt(targetBox.getAttribute("data-instance-id"));
+            const targetType = targetBox.getAttribute("data-type");
+
+            if (draggedType !== targetType) return; // Prevent cross-list dragging
+
+            const list = stepsOptionsList;
+            const draggedElement = document.querySelector(`.option[data-instance-id="${draggedInstanceId}"][data-type="${draggedType}"]`);
+            const targetElement = document.querySelector(`.option[data-instance-id="${targetInstanceId}"][data-type="${targetType}"]`);
+
+            const items = Array.from(list.children).filter(child => child.classList.contains("option"));
+            const draggedIndex = items.indexOf(draggedElement);
+            const targetIndex = items.indexOf(targetElement);
+
+            // Update the current order
+            const [removed] = currentStepsOrder.splice(draggedIndex, 1);
+            currentStepsOrder.splice(targetIndex, 0, removed);
+
+            // Re-render the list
+            stepsOptionsList.innerHTML = "";
+            currentStepsOrder.forEach((step, index) => {
+                const existingBox = items.find(item => parseInt(item.getAttribute("data-id")) === step.id);
+                const instanceId = existingBox ? existingBox.getAttribute("data-instance-id") : instanceCounter++;
+                addStepBox(step, instanceId);
+            });
+
+            // Reapply hint visibility after re-rendering
+            if (hintsVisible) {
+                const descriptions = document.querySelectorAll(".step-description");
+                descriptions.forEach(desc => {
+                    desc.style.display = "block";
+                });
+            }
+        }
+
+        function submitTask() {
+            // Debug: Log the current order of IDs
+            const currentIds = currentStepsOrder.map(step => step.id);
+            console.log("Current order of step IDs:", currentIds);
+
+            const stepsCorrect = currentStepsOrder.every((step, index) => step.id === correctStepsOrder[index]);
+
+            let feedbackText = "";
+            if (stepsCorrect) {
+                feedbackText = "Correct! The 6 steps of hand hygiene are in the right order.";
+                taskFeedback.classList.add("correct");
+                taskSection.classList.add("correct");
+                taskSubmitBtn.disabled = true;
+                taskTryAgainBtn.style.display = "none";
+            } else {
+                feedbackText = `Incorrect. Please try again. The correct order for the hand hygiene steps is: Step 1, Step 2, Step 3, Step 4, Step 5, Step 6.`;
+                taskFeedback.classList.add("incorrect");
+                taskSection.classList.add("incorrect");
+                taskSubmitBtn.disabled = true;
+                taskTryAgainBtn.style.display = "inline-block";
+            }
+
+            taskFeedback.textContent = feedbackText;
+            taskFeedback.style.display = "block";
+        }
+
+        function tryAgainTask() {
+            taskSection.classList.remove("incorrect");
+            taskFeedback.style.display = "none";
+            taskSubmitBtn.disabled = false;
+            taskTryAgainBtn.style.display = "none";
+            initializeTask(); // Reinitialize task with a new shuffle
+        }
+
+        // Initialize Task
+        initializeTask();
+    </script>
+</body>
+</html>

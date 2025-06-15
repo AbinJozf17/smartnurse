@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPSG Goals Training for Nurses</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #2c3e50;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #0288d1;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #0277bd;
+            margin: 20px 0 10px;
+        }
+
+        p {
+            font-size: 22px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .task-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-height: 200px;
+        }
+
+        .option {
+            background-color: #ffffff;
+            border: 2px solid #0288d1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: move;
+            font-size: 16px;
+            font-weight: 500;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            user-select: none;
+            text-align: left;
+        }
+
+        .option:hover {
+            transform: scale(1.05);
+        }
+
+        .option.dragging {
+            opacity: 0.5;
+        }
+
+        .option.drag-over {
+            background-color: #b3e5fc;
+        }
+
+        .task-section.incorrect .option {
+            background-color: #ffebee;
+        }
+
+        .task-section.correct .option {
+            background-color: #e8f5e9;
+        }
+
+        .scenario-box {
+            background-color: #e1f5fe;
+            border: 2px solid #4fc3f7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #0288d1;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #0277bd;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-size: 16px;
+            font-style: italic;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .correct {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .incorrect {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .submit-btn, .next-btn {
+            background-color: #0288d1;
+            color: #ffffff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .submit-btn:hover, .next-btn:hover {
+            background-color: #0277bd;
+            transform: scale(1.05);
+        }
+
+        .submit-btn:disabled, .next-btn:disabled {
+            background-color: #b0bec5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            .option {
+                font-size: 14px;
+                padding: 6px 10px;
+            }
+
+            select {
+                font-size: 14px;
+                padding: 6px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            p, .feedback {
+                font-size: 14px;
+            }
+
+            .submit-btn, .next-btn {
+                font-size: 14px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>IPSG Goals Training for Nurses</h1>
+        <p></p>
+
+        <!-- Task 1: Rearrange IPSG Goals -->
+        <div class="task-section" id="task1-section">
+            <h2>Task 1: Rearrange IPSG Goals</h2>
+            <p>Drag and drop the IPSG goals to arrange them in the correct order (IPSG 1 to IPSG 6).</p>
+            <div class="options-list" id="ipsg-options-list">
+                <!-- Goals will be dynamically generated -->
+            </div>
+            <div class="feedback" id="task1-feedback"></div>
+            <button class="submit-btn" id="task1-submit-btn" onclick="submitTask1()">Submit Order</button>
+            <button class="next-btn" id="task1-next-btn" onclick="startTask2()" disabled>Proceed to Task 2</button>
+        </div>
+
+        <!-- Task 2: Identify IPSG Goals in Scenarios -->
+        <div class="task-section" id="task2-section" style="display: none;">
+            <h2>Task 2: Identify IPSG Goals</h2>
+            <p></p>
+            <div class="scenario-box" id="scenario-box">
+                <p id="scenario-text">Scenario text will be displayed here.</p>
+            </div>
+            <select id="ipsg-select" onchange="enableTask2Submit()">
+                <option value="0">Select an IPSG Goal</option>
+                <option value="1">IPSG 1: Identify Patients Correctly</option>
+                <option value="2">IPSG 2: Improve Effective Communication</option>
+                <option value="3">IPSG 3: Improve the Safety of High-Alert Medications</option>
+                <option value="4">IPSG 4: Ensure Safe Surgery</option>
+                <option value="5">IPSG 5: Reduce the Risk of Health Care-Associated Infections</option>
+                <option value="6">IPSG 6: Reduce the Risk of Patient Harm Resulting from Falls</option>
+            </select>
+            <div class="feedback" id="task2-feedback"></div>
+            <button class="submit-btn" id="task2-submit-btn" onclick="submitTask2()" disabled>Submit Selection</button>
+            <button class="next-btn" id="task2-next-btn" onclick="nextScenario()" disabled>Next Scenario</button>
+        </div>
+    </div>
+
+    <script>
+        // Task 1 Data: Disordered IPSG Goals
+        const disorderedIpsgGoals = [
+            { id: 5, description: "Reduce the Risk of Health Care-Associated Infections" },
+            { id: 3, description: "Improve the Safety of High-Alert Medications" },
+            { id: 6, description: "Reduce the Risk of Patient Harm Resulting from Falls" },
+            { id: 1, description: "Identify Patients Correctly" },
+            { id: 4, description: "Ensure Correct Site, Correct Patient and Correct Procedure" },
+            { id: 2, description: "Improve Effective Communication" }
+        ];
+
+        const correctIpsgOrder = [
+            "Identify Patients Correctly",
+            "Improve Effective Communication",
+            "Improve the Safety of High-Alert Medications",
+            "Ensure Correct Site, Correct Patient and Correct Procedure",
+            "Reduce the Risk of Health Care-Associated Infections",
+            "Reduce the Risk of Patient Harm Resulting from Falls"
+        ];
+
+        let currentIpsgOrder = [...disorderedIpsgGoals];
+
+        // Task 2 Data: Scenarios
+        const scenarios = [
+            {
+                description: "A nurse administers medication to a patient without checking the wristband, leading to a medication error.",
+                correctIpsg: 1,
+                explanation: "This scenario involves a failure to verify the patient's identity, which violates IPSG 1: Identify Patients Correctly. Always use at least two identifiers (e.g., name and date of birth) before administering medication."
+            },
+            {
+                description: "A verbal order for a high-dose medication is misheard, resulting in an overdose.",
+                correctIpsg: 2,
+                explanation: "This scenario highlights a communication error during a verbal order, violating IPSG 2: Improve Effective Communication. Verbal orders should be confirmed using a read-back procedure to ensure accuracy."
+            },
+            {
+                description: "A patient receives an incorrect dose of insulin because it was not stored separately from other medications.",
+                correctIpsg: 3,
+                explanation: "Insulin is a high-alert medication, and improper storage led to an error, violating IPSG 3: Improve the Safety of High-Alert Medications. High-alert medications should be stored separately and double-checked before administration."
+            },
+            {
+                description: "A surgical team operates on the wrong leg because the surgical site wasn’t marked.",
+                correctIpsg: 4,
+                explanation: "This scenario involves a wrong-site surgery, violating IPSG 4: Ensure Safe Surgery. A site marking and time-out procedure should be performed to confirm the correct site before surgery begins."
+            },
+            {
+                description: "A patient develops a post-operative infection due to improper hand hygiene by the care team.",
+                correctIpsg: 5,
+                explanation: "This scenario involves a health care-associated infection due to poor hand hygiene, violating IPSG 5: Reduce the Risk of Health Care-Associated Infections. Proper hand hygiene protocols must be followed to prevent infections."
+            },
+            {
+                description: "An elderly patient falls in the bathroom because there were no handrails installed.",
+                correctIpsg: 6,
+                explanation: "This scenario involves a patient fall due to inadequate safety measures, violating IPSG 6: Reduce the Risk of Patient Harm Resulting from Falls. Fall risk assessments and environmental modifications (e.g., handrails) are necessary."
+            },
+            {
+                description: "Two patients with similar names are in the same ward, and a blood transfusion is given to the wrong patient.",
+                correctIpsg: 1,
+                explanation: "This scenario involves a patient identification error during a blood transfusion, violating IPSG 1: Identify Patients Correctly. Always confirm patient identity using two identifiers before procedures."
+            },
+            {
+                description: "A critical lab result is delayed because the nurse didn’t follow the read-back procedure during a phone call.",
+                correctIpsg: 2,
+                explanation: "This scenario involves a communication failure during a critical result report, violating IPSG 2: Improve Effective Communication. A read-back procedure should be used to confirm understanding of critical information."
+            },
+            {
+                description: "A patient on chemotherapy receives a high-alert medication without double-checking the dose, leading to toxicity.",
+                correctIpsg: 3,
+                explanation: "This scenario involves an error with a high-alert medication due to lack of double-checking, violating IPSG 3: Improve the Safety of High-Alert Medications. Protocols for double-checking doses of high-alert medications must be followed."
+            },
+            {
+                description: "A patient undergoing surgery has the wrong procedure performed due to a missing time-out process.",
+                correctIpsg: 4,
+                explanation: "This scenario involves a wrong-procedure error during surgery, violating IPSG 4: Ensure Safe Surgery. A time-out process before surgery ensures the correct procedure is performed on the correct patient."
+            }
+        ];
+
+        let currentScenarioIndex = 0;
+
+        // Task 1 Elements
+        const task1Section = document.getElementById("task1-section");
+        const ipsgOptionsList = document.getElementById("ipsg-options-list");
+        const task1Feedback = document.getElementById("task1-feedback");
+        const task1SubmitBtn = document.getElementById("task1-submit-btn");
+        const task1NextBtn = document.getElementById("task1-next-btn");
+
+        // Task 2 Elements
+        const task2Section = document.getElementById("task2-section");
+        const scenarioText = document.getElementById("scenario-text");
+        const ipsgSelect = document.getElementById("ipsg-select");
+        const task2Feedback = document.getElementById("task2-feedback");
+        const task2SubmitBtn = document.getElementById("task2-submit-btn");
+        const task2NextBtn = document.getElementById("task2-next-btn");
+
+        // Task 1: Initialize IPSG Goals Rearrangement
+        function initializeTask1() {
+            currentIpsgOrder = [...disorderedIpsgGoals];
+            ipsgOptionsList.innerHTML = "";
+            task1Feedback.style.display = "none";
+            task1SubmitBtn.disabled = false;
+            task1NextBtn.disabled = true;
+
+            currentIpsgOrder.forEach(opt => {
+                const div = document.createElement("div");
+                div.classList.add("option");
+                div.setAttribute("draggable", "true");
+                div.setAttribute("data-id", opt.id);
+                div.setAttribute("data-description", opt.description);
+                div.textContent = opt.description;
+                div.addEventListener("dragstart", dragStart);
+                div.addEventListener("dragover", dragOver);
+                div.addEventListener("dragleave", dragLeave);
+                div.addEventListener("drop", drop);
+                div.addEventListener("dragend", dragEnd);
+                ipsgOptionsList.appendChild(div);
+            });
+        }
+
+        function dragStart(e) {
+            e.target.classList.add("dragging");
+            e.dataTransfer.setData("text/plain", JSON.stringify({
+                id: e.target.getAttribute("data-id"),
+                description: e.target.getAttribute("data-description")
+            }));
+        }
+
+        function dragEnd(e) {
+            e.target.classList.remove("dragging");
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+            e.target.classList.add("drag-over");
+        }
+
+        function dragLeave(e) {
+            e.target.classList.remove("drag-over");
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            e.target.classList.remove("drag-over");
+            const data = JSON.parse(e.dataTransfer.getData("text/plain"));
+            const draggedId = parseInt(data.id);
+            const draggedDescription = data.description;
+            const targetId = parseInt(e.target.getAttribute("data-id"));
+
+            const draggedElement = document.querySelector(`.option[data-id="${draggedId}"]`);
+            const targetElement = e.target;
+
+            const items = Array.from(ipsgOptionsList.children);
+            const draggedIndex = items.indexOf(draggedElement);
+            const targetIndex = items.indexOf(targetElement);
+
+            // Update the current order
+            const currentItems = currentIpsgOrder;
+            const [removed] = currentItems.splice(draggedIndex, 1);
+            currentItems.splice(targetIndex, 0, removed);
+
+            // Re-render the list
+            ipsgOptionsList.innerHTML = "";
+            currentItems.forEach(opt => {
+                const div = document.createElement("div");
+                div.classList.add("option");
+                div.setAttribute("draggable", "true");
+                div.setAttribute("data-id", opt.id);
+                div.setAttribute("data-description", opt.description);
+                div.textContent = opt.description;
+                div.addEventListener("dragstart", dragStart);
+                div.addEventListener("dragover", dragOver);
+                div.addEventListener("dragleave", dragLeave);
+                div.addEventListener("drop", drop);
+                div.addEventListener("dragend", dragEnd);
+                ipsgOptionsList.appendChild(div);
+            });
+        }
+
+        function submitTask1() {
+            const isCorrect = currentIpsgOrder.every((opt, index) => opt.description === correctIpsgOrder[index]);
+            if (isCorrect) {
+                task1Feedback.textContent = "Correct! The IPSG goals are now in the right order (IPSG 1 to IPSG 6).";
+                task1Feedback.classList.add("correct");
+                task1Section.classList.add("correct");
+            } else {
+                task1Feedback.textContent = `Incorrect. The correct order is: ${correctIpsgOrder.join(", ")}.`;
+                task1Feedback.classList.add("incorrect");
+                task1Section.classList.add("incorrect");
+            }
+
+            task1Feedback.style.display = "block";
+            task1SubmitBtn.disabled = true;
+            task1NextBtn.disabled = false;
+        }
+
+        // Task 2: Identify IPSG Goals in Scenarios
+        function startTask2() {
+            task1Section.style.display = "none";
+            task2Section.style.display = "block";
+            currentScenarioIndex = 0;
+            initializeTask2();
+        }
+
+        function initializeTask2() {
+            const currentScenario = scenarios[currentScenarioIndex];
+            scenarioText.textContent = currentScenario.description;
+            ipsgSelect.value = "0";
+            task2Feedback.style.display = "none";
+            task2SubmitBtn.disabled = true;
+            task2NextBtn.disabled = true;
+        }
+
+        function enableTask2Submit() {
+            task2SubmitBtn.disabled = ipsgSelect.value === "0";
+        }
+
+        function submitTask2() {
+            const selectedIpsg = parseInt(ipsgSelect.value);
+            const currentScenario = scenarios[currentScenarioIndex];
+            const isCorrect = selectedIpsg === currentScenario.correctIpsg;
+
+            if (isCorrect) {
+                task2Feedback.textContent = `Correct! ${currentScenario.explanation}`;
+                task2Feedback.classList.add("correct");
+            } else {
+                const correctOption = ipsgSelect.options[currentScenario.correctIpsg].text;
+                task2Feedback.textContent = `Incorrect. The correct IPSG goal is ${correctOption}. ${currentScenario.explanation}`;
+                task2Feedback.classList.add("incorrect");
+            }
+
+            task2Feedback.style.display = "block";
+            task2SubmitBtn.disabled = true;
+            task2NextBtn.disabled = false;
+        }
+
+        function nextScenario() {
+            currentScenarioIndex++;
+            if (currentScenarioIndex < scenarios.length) {
+                initializeTask2();
+            } else {
+                task2Section.innerHTML = `
+                    <h2>Training Complete!</h2>
+                    <p>Congratulations! You have completed the IPSG training by identifying the goals in all scenarios.</p>
+                `;
+            }
+        }
+
+        // Initialize Task 1
+        initializeTask1();
+    </script>
+</body>
+</html>

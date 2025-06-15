@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select a Topic for Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            background: #87CEEB;
+            color: #1a3c34;
+            overflow-x: hidden;
+        }
+
+        /* Animation Styles */
+        .animation-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards, fadeOut 1s ease-out 9s forwards;
+            z-index: 1000;
+        }
+
+        .vital-text {
+            font-size: 80px;
+            font-weight: bold;
+            letter-spacing: 10px;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .vital-text span {
+            opacity: 0;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5), -1px -1px 1px rgba(0, 0, 0, 0.3);
+            animation: bounceIn 0.5s ease forwards;
+        }
+
+        .vital-text span:nth-child(1) { animation-delay: 0.5s; }
+        .vital-text span:nth-child(2) { animation-delay: 0.9s; }
+        .vital-text span:nth-child(3) { animation-delay: 1.3s; }
+        .vital-text span:nth-child(4) { animation-delay: 1.7s; }
+        .vital-text span:nth-child(5) { animation-delay: 2.1s; }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            60% {
+                opacity: 1;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .full-form {
+            font-size: 32px;
+            opacity: 0;
+            animation: fadeInText 2s ease-in 2.5s forwards, glowPulse 2s ease-in-out infinite;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .word {
+            color: #FF0000;
+            text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+            display: inline-block;
+        }
+
+        .first-letter {
+            font-size: 150%;
+            font-weight: bold;
+            color: #ffff00;
+            text-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+        }
+
+        @keyframes fadeInText {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes glowPulse {
+            0% { text-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }
+            50% { text-shadow: 0 0 25px rgba(255, 0, 0, 1), 0 0 10px rgba(255, 0, 0, 0.8); }
+            100% { text-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Training Topics Styles */
+        .topics-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #d32f2f;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .topics-grid, .sub-topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+        }
+
+        .topic-card, .sub-topic-card {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border: 3px solid #0288d1;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .topic-card:hover, .sub-topic-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            background-color: #e1f5fe;
+        }
+
+        .topic-card a, .sub-topic-card a {
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            color: #0277bd;
+            display: block;
+            line-height: 1.5;
+        }
+
+        .topic-card a:hover, .sub-topic-card a:hover {
+            color: #d32f2f;
+        }
+
+        .sub-topics-section {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-bottom: 60px;
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, #d32f2f 0%, #0288d1 100%);
+            color: #ffffff;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Footer Styles */
+        .footer {
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 14px;
+            color: #0277bd;
+            background-color: #ffffff;
+            border-top: 2px solid #0288d1;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .vital-text {
+                font-size: 50px;
+                letter-spacing: 5px;
+            }
+
+            .full-form {
+                font-size: 18px;
+                gap: 5px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .topics-container, .sub-topics-section {
+                padding: 20px;
+            }
+
+            .topic-card, .sub-topic-card {
+                padding: 15px;
+            }
+
+            .topic-card a, .sub-topic-card a {
+                font-size: 14px;
+            }
+
+            .back-btn {
+                font-size: 14px;
+                padding: 10px 25px;
+            }
+
+            .footer {
+                font-size: 12px;
+                padding: 8px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animation Section -->
+    <div class="animation-container" id="animation-container">
+        <div class="vital-text">
+            <span>V</span>
+            <span>I</span>
+            <span>T</span>
+            <span>A</span>
+            <span>L</span>
+        </div>
+        <div class="full-form">
+            <span class="word"><span class="first-letter">V</span>irtual</span>
+            <span class="word"><span class="first-letter">I</span>nteractive</span>
+            <span class="word"><span class="first-letter">T</span>raining</span>
+            <span class="word"><span class="first-letter"></span>for</span>
+            <span class="word"><span class="first-letter">A</span>dvanced</span>
+            <span class="word"><span class="first-letter">L</span>earning</span>
+        </div>
+    </div>
+
+    <!-- Main Topics Section -->
+    <div class="topics-container" id="main-topics-container">
+        <h1>Select a Topic for Practice</h1>
+        <div class="topics-grid">
+            <div class="topic-card" onclick="showSubTopics('common-nursing-procedures')">
+                <a href="#" onclick="event.preventDefault();">Common Nursing Procedures</a>
+            </div>
+            <div class="topic-card" onclick="showSubTopics('advanced-nursing-procedures')">
+                <a href="#" onclick="event.preventDefault();">Advanced Nursing Procedures</a>
+            </div>
+            <div class="topic-card" onclick="showSubTopics('patient-safety')">
+                <a href="#" onclick="event.preventDefault();">Patient Safety</a>
+            </div>
+            <div class="topic-card" onclick="showSubTopics('infection-control')">
+                <a href="#" onclick="event.preventDefault();">Infection Control</a>
+            </div>
+            <div class="topic-card" onclick="showSubTopics('bls-acls-nals-pals')">
+                <a href="#" onclick="event.preventDefault();">BLS  ACLS  NALS  PALS</a>
+            </div>
+            <div class="topic-card" onclick="showSubTopics('medication-administration')">
+                <a href="#" onclick="event.preventDefault();">Medication Administration</a>
+            </div>
+            <div class="topic-card" onclick="showSubTopics('hospital-policies')">
+                <a href="#" onclick="event.preventDefault();">Hospital Policies</a>
+            </div>
+            <div class="topic-card" onclick="showSubTopics('nabh-audit-preparation')">
+                <a href="#" onclick="event.preventDefault();">NABH Audit Preparation</a>
+            </div>
+            <div class="topic-card" onclick="showSubTopics('nursing-documentation')">
+                <a href="#" onclick="event.preventDefault();">Nursing Documentation</a>
+            </div>
+            <div class="topic-card" onclick="showSubTopics('specialty-nursing')">
+                <a href="#" onclick="event.preventDefault();">Specialty Nursing</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sub-Topics Sections -->
+    <div class="sub-topics-section" id="common-nursing-procedures-sub-topics">
+        <h1>Common Nursing Procedures</h1>
+        <button class="back-btn" onclick="showMainTopics()">Back to Main Topics</button>
+        <div class="sub-topics-grid">
+            <div class="sub-topic-card">
+                <a href="Common Nursing Procedures/Admission of a Patient in the ward.html">Admission of a Patient in the ward</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Common Nursing Procedures/Blood Glucose Monitoring.html">Blood Glucose Monitoring</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Common Nursing Procedures/Blood Sample Collection Procedure Steps.html">Blood Sample Collection Procedure Steps</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Common Nursing Procedures/Blood Sample Collection Tube Selection.html">Blood Sample Collection Tube Selection</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Common Nursing Procedures/ECG Recording Procedure Steps.html">ECG Recording Procedure Steps</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Enema Administration.html">Enema Administration</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Common Nursing Procedures/Foley's Catheterization Procedure Steps.html">Foley's Catheterization Procedure Steps</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Common Nursing Procedures/IV Cannulation Procedure Steps.html">IV Cannulation Procedure Steps</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Common Nursing Procedures/Oxygen Administration Steps.html">Oxygen Administration Steps</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Common Nursing Procedures/Pulse Checking Sites.html">Pulse Checking Sites</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Common Nursing Procedures/Ryle's Tube Insertion Procedure Steps.html">Ryle's Tube Insertion Procedure Steps</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Common Nursing Procedures/Temperature Assessment.html">Temperature Assessment</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Common Nursing Procedures/">Sub Topic 12</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Common Nursing Procedures/">Sub Topic 13</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="sub-topics-section" id="advanced-nursing-procedures-sub-topics">
+        <h1>Advanced Nursing Procedures</h1>
+        <button class="back-btn" onclick="showMainTopics()">Back to Main Topics</button>
+        <div class="sub-topics-grid">
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Advanced Nursing Procedures/ABG Analysis.html">ABG Analysis</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Advanced Nursing Procedures/Blood Culture Sample Collection.html">Blood Culture Sample Collection</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Advanced Nursing Procedures/ET Tube Suction Procedure.html">ET Tube Suction Procedure</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Advanced Nursing Procedures/GCS Parameter Arrangement.html">GCS Parameter Arrangement</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Advanced Nursing Procedures/GCS Assessment - Scenario.html">GCS Assessment - Scenario</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Advanced Nursing Procedures/Advanced_Nursing_Procedures_Sub_Topic_6.html">Sub Topic 6</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Advanced Nursing Procedures/Advanced_Nursing_Procedures_Sub_Topic_7.html">Sub Topic 7</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Advanced Nursing Procedures/Advanced_Nursing_Procedures_Sub_Topic_8.html">Sub Topic 8</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Advanced Nursing Procedures/Advanced_Nursing_Procedures_Sub_Topic_9.html">Sub Topic 9</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Advanced Nursing Procedures/Advanced_Nursing_Procedures_Sub_Topic_10.html">Sub Topic 10</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="sub-topics-section" id="patient-safety-sub-topics">
+        <h1>Patient Safety</h1>
+        <button class="back-btn" onclick="showMainTopics()">Back to Main Topics</button>
+        <div class="sub-topics-grid">
+            <div class="sub-topic-card">
+                <a href="Patient Safety/IPSG Goals - Orientation.html">IPSG Goals - Orientation</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Patient Safety/IPSG Goals - Scenarios.html">IPSG Goals - Scenarios</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Patient Safety/Surgical Safety Checklist.html">Surgical Safety Checklist</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Patient Safety/Patient_Safety_Sub_Topic_4.html">Sub Topic 4</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Patient Safety/Patient_Safety_Sub_Topic_5.html">Sub Topic 5</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Patient Safety/Patient_Safety_Sub_Topic_6.html">Sub Topic 6</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Patient Safety/Patient_Safety_Sub_Topic_7.html">Sub Topic 7</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Patient Safety/Patient_Safety_Sub_Topic_8.html">Sub Topic 8</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Patient Safety/Patient_Safety_Sub_Topic_9.html">Sub Topic 9</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Patient Safety/Patient_Safety_Sub_Topic_10.html">Sub Topic 10</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="sub-topics-section" id="infection-control-sub-topics">
+        <h1>Infection Control</h1>
+        <button class="back-btn" onclick="showMainTopics()">Back to Main Topics</button>
+        <div class="sub-topics-grid">
+            <div class="sub-topic-card">
+                <a href="Infection Control/Hand Hygiene Images">Hand Hygiene Steps & Moments</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Infection Control/ICN Care Bundles.html">ICN Care Bundles</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="Infection Control/">Sub Topic 3</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Infection Control/Infection_Control_Sub_Topic_4.html">Sub Topic 4</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Infection Control/Infection_Control_Sub_Topic_5.html">Sub Topic 5</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Infection Control/Infection_Control_Sub_Topic_6.html">Sub Topic 6</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Infection Control/Infection_Control_Sub_Topic_7.html">Sub Topic 7</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Infection Control/Infection_Control_Sub_Topic_8.html">Sub Topic 8</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Infection Control/Infection_Control_Sub_Topic_9.html">Sub Topic 9</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Infection Control/Infection_Control_Sub_Topic_10.html">Sub Topic 10</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="sub-topics-section" id="bls-acls-nals-pals-sub-topics">
+        <h1>BLS  ACLS  NALS  PALS</h1>
+        <button class="back-btn" onclick="showMainTopics()">Back to Main Topics</button>
+        <div class="sub-topics-grid">
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/BLS  ACLS  NALS  PALS/ACLS - Arrest - Initial Phase.html">ACLS - Arrest - Initial Phase</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/BLS  ACLS  NALS  PALS/ACLS - Cardiac Arrest Scenarios.html">ACLS - Cardiac Arrest Scenarios</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/BLS  ACLS  NALS  PALS/BLS_ACLS_NALS_PALS_Sub_Topic_3.html">Sub Topic 3</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/BLS  ACLS  NALS  PALS/BLS_ACLS_NALS_PALS_Sub_Topic_4.html">Sub Topic 4</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/BLS  ACLS  NALS  PALS/BLS_ACLS_NALS_PALS_Sub_Topic_5.html">Sub Topic 5</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/BLS  ACLS  NALS  PALS/BLS_ACLS_NALS_PALS_Sub_Topic_6.html">Sub Topic 6</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/BLS  ACLS  NALS  PALS/BLS_ACLS_NALS_PALS_Sub_Topic_7.html">Sub Topic 7</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/BLS  ACLS  NALS  PALS/BLS_ACLS_NALS_PALS_Sub_Topic_8.html">Sub Topic 8</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/BLS  ACLS  NALS  PALS/BLS_ACLS_NALS_PALS_Sub_Topic_9.html">Sub Topic 9</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/BLS  ACLS  NALS  PALS/BLS_ACLS_NALS_PALS_Sub_Topic_10.html">Sub Topic 10</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="sub-topics-section" id="medication-administration-sub-topics">
+        <h1>Medication Administration</h1>
+        <button class="back-btn" onclick="showMainTopics()">Back to Main Topics</button>
+        <div class="sub-topics-grid">
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Medication_Administration_Sub_Topic_1.html">Sub Topic 1</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Medication_Administration_Sub_Topic_2.html">Sub Topic 2</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Medication_Administration_Sub_Topic_3.html">Sub Topic 3</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Medication_Administration_Sub_Topic_4.html">Sub Topic 4</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Medication_Administration_Sub_Topic_5.html">Sub Topic 5</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Medication_Administration_Sub_Topic_6.html">Sub Topic 6</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Medication_Administration_Sub_Topic_7.html">Sub Topic 7</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Medication_Administration_Sub_Topic_8.html">Sub Topic 8</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Medication_Administration_Sub_Topic_9.html">Sub Topic 9</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Medication_Administration_Sub_Topic_10.html">Sub Topic 10</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="sub-topics-section" id="hospital-policies-sub-topics">
+        <h1>Hospital Policies</h1>
+        <button class="back-btn" onclick="showMainTopics()">Back to Main Topics</button>
+        <div class="sub-topics-grid">
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Hospital Policies/Emergency Codes.html">Emergency Codes</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Hospital Policies/Hospital_Policies_Sub_Topic_2.html">Sub Topic 2</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Hospital Policies/Hospital_Policies_Sub_Topic_3.html">Sub Topic 3</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Hospital Policies/Hospital_Policies_Sub_Topic_4.html">Sub Topic 4</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Hospital Policies/Hospital_Policies_Sub_Topic_5.html">Sub Topic 5</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Hospital Policies/Hospital_Policies_Sub_Topic_6.html">Sub Topic 6</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Hospital Policies/Hospital_Policies_Sub_Topic_7.html">Sub Topic 7</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Hospital Policies/Hospital_Policies_Sub_Topic_8.html">Sub Topic 8</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Hospital Policies/Hospital_Policies_Sub_Topic_9.html">Sub Topic 9</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Hospital Policies/Hospital_Policies_Sub_Topic_10.html">Sub Topic 10</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="sub-topics-section" id="nabh-audit-preparation-sub-topics">
+        <h1>NABH Audit Preparation</h1>
+        <button class="back-btn" onclick="showMainTopics()">Back to Main Topics</button>
+        <div class="sub-topics-grid">
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/NABH Audit Preparation/NABH_Audit_Preparation_Sub_Topic_1.html">Sub Topic 1</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/NABH Audit Preparation/NABH_Audit_Preparation_Sub_Topic_2.html">Sub Topic 2</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/NABH Audit Preparation/NABH_Audit_Preparation_Sub_Topic_3.html">Sub Topic 3</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/NABH Audit Preparation/NABH_Audit_Preparation_Sub_Topic_4.html">Sub Topic 4</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/NABH Audit Preparation/NABH_Audit_Preparation_Sub_Topic_5.html">Sub Topic 5</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/NABH Audit Preparation/NABH_Audit_Preparation_Sub_Topic_6.html">Sub Topic 6</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/NABH Audit Preparation/NABH_Audit_Preparation_Sub_Topic_7.html">Sub Topic 7</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/NABH Audit Preparation/NABH_Audit_Preparation_Sub_Topic_8.html">Sub Topic 8</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/NABH Audit Preparation/NABH_Audit_Preparation_Sub_Topic_9.html">Sub Topic 9</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/NABH Audit Preparation/NABH_Audit_Preparation_Sub_Topic_10.html">Sub Topic 10</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="sub-topics-section" id="nursing-documentation-sub-topics">
+        <h1>Nursing Documentation</h1>
+        <button class="back-btn" onclick="showMainTopics()">Back to Main Topics</button>
+        <div class="sub-topics-grid">
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Nursing Documentation/Morse Fall Risk Assessment Tool.html">Morse Fall Risk Assessment Tool</a>
+            </div>
+	    <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Nursing Documentation/Nursing Care Plan (NCP).html">Nursing Care Plan (NCP)</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Nursing Documentation/Skin Assessment - Braden Scale.html">Skin Assessment - Braden Scale</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Nursing Documentation/VIP Scale Assessment.html">VIP Scale Assessment</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Nursing Documentation/Nursing_Documentation_Sub_Topic_5.html">Sub Topic 5</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Nursing Documentation/Nursing_Documentation_Sub_Topic_6.html">Sub Topic 6</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Nursing Documentation/Nursing_Documentation_Sub_Topic_7.html">Sub Topic 7</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Nursing Documentation/Nursing_Documentation_Sub_Topic_8.html">Sub Topic 8</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Nursing Documentation/Nursing_Documentation_Sub_Topic_9.html">Sub Topic 9</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Nursing Documentation/Nursing_Documentation_Sub_Topic_10.html">Sub Topic 10</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="sub-topics-section" id="specialty-nursing-sub-topics">
+        <h1>Specialty Nursing</h1>
+        <button class="back-btn" onclick="showMainTopics()">Back to Main Topics</button>
+        <div class="sub-topics-grid">
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Specialty Nursing/IDCCN Training Portal.html">IDCCN Training Portal</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Specialty Nursing/Specialty_Nursing_Sub_Topic_2.html">Sub Topic 2</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Specialty Nursing/Specialty_Nursing_Sub_Topic_3.html">Sub Topic 3</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Specialty Nursing/Specialty_Nursing_Sub_Topic_4.html">Sub Topic 4</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Specialty Nursing/Specialty_Nursing_Sub_Topic_5.html">Sub Topic 5</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Specialty Nursing/Specialty_Nursing_Sub_Topic_6.html">Sub Topic 6</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Specialty Nursing/Specialty_Nursing_Sub_Topic_7.html">Sub Topic 7</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Specialty Nursing/Specialty_Nursing_Sub_Topic_8.html">Sub Topic 8</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Specialty Nursing/Specialty_Nursing_Sub_Topic_9.html">Sub Topic 9</a>
+            </div>
+            <div class="sub-topic-card">
+                <a href="file:///D:/VITAL - Nursing Interactive Module/Specialty Nursing/Specialty_Nursing_Sub_Topic_10.html">Sub Topic 10</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="footer">
+        Prepared by Kuriakose John, Nurse Educator, Fortis Hospital, Jaipur
+    </div>
+
+    <script>
+        // Show animation first, then reveal main topics after 10 seconds
+        setTimeout(() => {
+            document.getElementById("animation-container").style.display = 'none';
+            document.getElementById("main-topics-container").style.display = 'flex';
+        }, 10000); // 10 seconds
+
+        function showSubTopics(topicId) {
+            // Hide main topics
+            document.getElementById("main-topics-container").style.display = 'none';
+
+            // Hide all sub-topics sections
+            const subTopicsSections = document.querySelectorAll('.sub-topics-section');
+            subTopicsSections.forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show the selected sub-topics section
+            const selectedSubTopics = document.getElementById(`${topicId}-sub-topics`);
+            if (selectedSubTopics) {
+                selectedSubTopics.style.display = 'flex';
+            }
+        }
+
+        function showMainTopics() {
+            // Hide all sub-topics sections
+            const subTopicsSections = document.querySelectorAll('.sub-topics-section');
+            subTopicsSections.forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show main topics
+            document.getElementById("main-topics-container").style.display = 'flex';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surgical Safety Checklist Awareness Session</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            color: #2c3e50;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #d32f2f;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .instructions {
+            font-size: 16px;
+            color: #0277bd;
+            margin-bottom: 20px;
+            text-align: center;
+            background: #ffffff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .checklist-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            gap: 20px;
+        }
+
+        .column {
+            flex: 1;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 3px solid #0288d1;
+            padding: 15px;
+            min-height: 400px;
+        }
+
+        .column h2 {
+            font-size: 20px;
+            color: #0277bd;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .parameter {
+            background-color: #e1f5fe;
+            border: 2px solid #0288d1;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 14px;
+            cursor: move;
+            transition: background-color 0.3s ease;
+            text-align: center;
+        }
+
+        .parameter:hover {
+            background-color: #b3e5fc;
+        }
+
+        .parameter.dragging {
+            opacity: 0.5;
+        }
+
+        .column.dropzone {
+            background-color: #f0f8ff;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            display: none;
+            text-align: center;
+        }
+
+        .feedback.correct {
+            color: #388e3c;
+        }
+
+        .feedback.incorrect {
+            color: #d32f2f;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .submit-btn, .reset-btn {
+            background: linear-gradient(45deg, #0288d1 0%, #d32f2f 100%);
+            color: #ffffff;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .reset-btn {
+            background: linear-gradient(45deg, #388e3c 0%, #66bb6a 100%);
+        }
+
+        .submit-btn:hover, .reset-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #2c3e50;
+            opacity: 0.7;
+        }
+
+        /* Responsive design */
+        @media (max-width: 800px) {
+            .checklist-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .column {
+                min-height: 300px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .instructions {
+                font-size: 14px;
+            }
+
+            .parameter {
+                font-size: 12px;
+                padding: 8px;
+            }
+
+            .submit-btn, .reset-btn {
+                font-size: 14px;
+                padding: 10px 25px;
+            }
+
+            .feedback {
+                font-size: 16px;
+            }
+
+            footer {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Surgical Safety Checklist Awareness Session</h1>
+    <div class="instructions">
+        Drag and drop the parameters into the correct columns: Sign In (before anesthesia), Time Out (before incision), or Sign Out (before skin closure)
+    </div>
+
+    <div class="checklist-container" id="checklist-container">
+        <div class="column" id="sign-in">
+            <h2>Sign In</h2>
+        </div>
+        <div class="column" id="time-out">
+            <h2>Time Out</h2>
+        </div>
+        <div class="column" id="sign-out">
+            <h2>Sign Out</h2>
+        </div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <div class="buttons">
+        <button class="submit-btn" onclick="checkAnswers()">Submit</button>
+        <button class="reset-btn" onclick="resetChecklist()">Reset</button>
+    </div>
+
+    <footer>Prepared by Kuriakose John</footer>
+
+    <script>
+        const parameterSets = [
+            {
+                "sign-in": [
+                    { text: "Patient identity, site, procedure, and consent confirmed?", correct: "sign-in" },
+                    { text: "Is the anaesthesia machine and medication check complete?", correct: "sign-in" },
+                    { text: "Does the patient have a known allergy?", correct: "sign-in" },
+                    { text: "Risk of >500ml blood loss (7ml/kg in children)?", correct: "sign-in" },
+                    { text: "Two IVs/central access and fluids planned?", correct: "sign-in" }
+                ],
+                "time-out": [
+                    { text: "Confirm all team members have introduced themselves", correct: "time-out" },
+                    { text: "Has antibiotic prophylaxis been given within the last 60 minutes?", correct: "time-out" },
+                    { text: "Are essential imaging results displayed?", correct: "time-out" }
+                ],
+                "sign-out": [
+                    { text: "Instrument, sponge, and needle counts completed?", correct: "sign-out" },
+                    { text: "What are the key concerns for recovery and any precaution to be taken for post operative pain management?", correct: "sign-out" },
+                    { text: "Has Specimen labelling done? (read specimen labels aloud, including patient name)", correct: "sign-out" }
+                ]
+            },
+            {
+                "sign-in": [
+                    { text: "Is there a risk of difficult airway or aspiration?", correct: "sign-in" },
+                    { text: "Is the anaesthesia machine and medication check complete?", correct: "sign-in" },
+                    { text: "Risk of >500ml blood loss (7ml/kg in children)?", correct: "sign-in" },
+                    { text: "Two IVs/central access and fluids planned?", correct: "sign-in" }
+                ],
+                "time-out": [
+                    { text: "Surgeon reviews critical events and steps", correct: "time-out" },
+                    { text: "How long will the case take?", correct: "time-out" },
+                    { text: "Nursing team confirms sterilization indicators", correct: "time-out" },
+                    { text: "Are essential imaging results displayed?", correct: "time-out" },
+                    { text: "Confirm the patient’s name, procedure, and where the incision will be made", correct: "time-out" }
+                ],
+                "sign-out": [
+                    { text: "Are specimens correctly labeled?", correct: "sign-out" },
+                    { text: "Has the procedure been recorded accurately?", correct: "sign-out" },
+                    { text: "Whether there are any equipment problems to be addressed?", correct: "sign-out" }
+                ]
+            },
+            {
+                "sign-in": [
+                    { text: "Patient identity, site, procedure, and consent confirmed?", correct: "sign-in" },
+                    { text: "Is the anaesthesia machine and medication check complete?", correct: "sign-in" },
+                    { text: "Risk of >500ml blood loss (7ml/kg in children)?", correct: "sign-in" },
+                    { text: "Two IVs/central access and fluids planned?", correct: "sign-in" }
+                ],
+                "time-out": [
+                    { text: "Confirm patient position and site marking", correct: "time-out" },
+                    { text: "Nursing team confirms equipment availability", correct: "time-out" },
+                    { text: "Are essential imaging results displayed?", correct: "time-out" },
+                    { text: "Has antibiotic prophylaxis been given within the last 60 minutes?", correct: "time-out" }
+                ],
+                "sign-out": [
+                    { text: "Are there any equipment issues to address?", correct: "sign-out" },
+                    { text: "Has the surgical instruments count been verified?", correct: "sign-out" },
+                    { text: "Documented special postoperative instructions and pain management plan?", correct: "sign-out" }
+                ]
+            }
+        ];
+
+        let currentSet = null;
+        let correctParameters = null;
+        let parameterElements = [];
+
+        function loadParameterSet() {
+            // Select a random set
+            const setIndex = Math.floor(Math.random() * parameterSets.length);
+            currentSet = parameterSets[setIndex];
+            correctParameters = {
+                "sign-in": currentSet["sign-in"].map(item => item.text),
+                "time-out": currentSet["time-out"].map(item => item.text),
+                "sign-out": currentSet["sign-out"].map(item => item.text)
+            };
+            parameterElements = [];
+
+            // Clear existing parameters
+            const columns = ["sign-in", "time-out", "sign-out"];
+            columns.forEach(columnId => {
+                const column = document.getElementById(columnId);
+                column.innerHTML = `<h2>${columnId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</h2>`;
+                column.addEventListener("dragover", allowDrop);
+                column.addEventListener("drop", drop);
+            });
+
+            // Combine all parameters and shuffle
+            const allParameters = [
+                ...currentSet["sign-in"],
+                ...currentSet["time-out"],
+                ...currentSet["sign-out"]
+            ];
+            shuffleArray(allParameters);
+
+            // Distribute parameters evenly across columns
+            const paramsPerColumn = Math.ceil(allParameters.length / columns.length);
+            columns.forEach((columnId, colIndex) => {
+                const column = document.getElementById(columnId);
+                const start = colIndex * paramsPerColumn;
+                const end = Math.min(start + paramsPerColumn, allParameters.length);
+                const paramsForColumn = allParameters.slice(start, end);
+
+                paramsForColumn.forEach((param, index) => {
+                    const div = document.createElement("div");
+                    div.className = "parameter";
+                    div.id = `param-${colIndex}-${index}`;
+                    div.textContent = param.text;
+                    div.draggable = true;
+                    div.setAttribute("data-correct", param.correct);
+                    div.addEventListener("dragstart", drag);
+                    column.appendChild(div);
+                    parameterElements.push({ id: div.id, element: div, originalText: param.text });
+                });
+            });
+
+            // Reset feedback
+            const feedbackElement = document.getElementById("feedback");
+            feedbackElement.style.display = "none";
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+            const dropzone = event.target.closest('.column');
+            if (dropzone) {
+                dropzone.classList.add('dropzone');
+            }
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.id);
+            event.target.classList.add('dragging');
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const id = event.dataTransfer.getData("text");
+            const draggableElement = document.getElementById(id);
+            if (!draggableElement) return;
+
+            const dropzone = event.target.closest('.column');
+            if (!dropzone) return;
+
+            // If the draggable element is already in a column, remove it first
+            const currentParent = draggableElement.parentElement;
+            if (currentParent !== dropzone) {
+                dropzone.appendChild(draggableElement);
+            }
+
+            dropzone.classList.remove('dropzone');
+        }
+
+        function checkAnswers() {
+            const feedbackElement = document.getElementById("feedback");
+            let allCorrect = true;
+
+            ["sign-in", "time-out", "sign-out"].forEach(columnId => {
+                const column = document.getElementById(columnId);
+                const parameters = Array.from(column.querySelectorAll('.parameter')).map(param => param.textContent);
+                const correctParams = correctParameters[columnId];
+
+                // Check if the parameters match exactly
+                if (parameters.length !== correctParams.length) {
+                    allCorrect = false;
+                } else {
+                    parameters.forEach(param => {
+                        if (!correctParams.includes(param)) {
+                            allCorrect = false;
+                        }
+                    });
+                    correctParams.forEach(correctParam => {
+                        if (!parameters.includes(correctParam)) {
+                            allCorrect = false;
+                        }
+                    });
+                }
+            });
+
+            feedbackElement.style.display = "block";
+            if (allCorrect) {
+                feedbackElement.textContent = "Correct! Well Done!";
+                feedbackElement.classList.add("correct");
+                feedbackElement.classList.remove("incorrect");
+            } else {
+                feedbackElement.textContent = "Incorrect. Please try again.";
+                feedbackElement.classList.add("incorrect");
+                feedbackElement.classList.remove("correct");
+            }
+        }
+
+        function resetChecklist() {
+            loadParameterSet();
+        }
+
+        // Load initial parameter set on page load
+        window.onload = function() {
+            loadParameterSet();
+        };
+    </script>
+</body>
+</html>
